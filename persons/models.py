@@ -57,6 +57,8 @@ class Customer(models.Model):
 class Analyst(models.Model):
     # TODO: Define fields here
     addBy = models.ForeignKey(Person)
+    #флаг что это руководитель
+    isHead = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Analyst'

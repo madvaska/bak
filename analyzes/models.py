@@ -25,12 +25,15 @@ class AnalyzeType(models.Model):
 
 class Order(models.Model):
     # TODO: Define fields here
-    dateTime = models.DateTimeField(blank=True, default=datetime.datetime.now)
-    code = models.CharField(blank=True, max_length=100)
-    type = models.ForeignKey(AnalyzeType)
-    customer = models.ForeignKey(Customer)
-    project = models.ForeignKey(Project)
-    comment = models.TextField()
+    dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now)
+    code        = models.CharField(blank=True, max_length=100)
+    codeOfSample= models.CharField(blank=True, max_length=100)
+    type        = models.ForeignKey(AnalyzeType)
+    customer    = models.ForeignKey(Customer)
+    project     = models.ForeignKey(Project)
+    comment     = models.TextField()
+    #флаг что по этому заказу сделан анализ и данные введены
+    executed    = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Order'
@@ -44,6 +47,7 @@ class Analyze(models.Model):
     dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now)
     order       = models.ForeignKey(Order)
     analyst     = models.ForeignKey(Analyst)
+    appointedBy = models.ForeignKey(Analyst)
     comment     = models.TextField()
     #этот флаг означает что измеритель ввел данные и проверил значение
     verifyed    = models.BooleanField(default=False)
@@ -86,7 +90,8 @@ class DataFormatField(models.Model):
     #дальнейшие поля для отображения на форме ввода и для отражения в виде таблицы результатов
     fieldCaption    = models.CharField(blank=True, max_length=100)
     fieldWidth      = models.IntegerField()
-    
+    fieldWidthInTable      = models.IntegerField()
+
     class Meta:
         verbose_name = 'DataFormatField'
         verbose_name_plural = 'DataFormatFields'
