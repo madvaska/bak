@@ -20,4 +20,6 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.persons, name='сотрудники'),
+    url(r'^pers/$', views.persons, name='сотрудники'),
+    url(r'^pers/add', views.persons, name='сотрудники'),
 ]

@@ -4,4 +4,5 @@ from .models import Person
 
 def persons(request):
     emps = Person.objects.all()
-    return render(request, 'persons/persons.html', {'emp':emps})
+    #print(emps)
+    return render(request, 'persons/persons.html', {'emps':emps})
