@@ -5,7 +5,7 @@ from django.db import models
 class Department(models.Model):
     # TODO: Define fields here
     name        = models.CharField(blank=True, max_length=100)
-    parent      = models.ForeignKey(Department, blank=True, null = True)
+    parent      = models.ForeignKey('self', blank=True, null = True)
 
 
     class Meta:
@@ -13,20 +13,25 @@ class Department(models.Model):
         verbose_name_plural = 'Departments'
 
     def __unicode__(self):
-        pass
+        return self.name
+    def __str__(self):
+        return self.name
+        #pass
 
 class PositionsAtWork(models.Model):
     # TODO: Define fields here
     name            = models.CharField(blank=True, max_length=100)
     atDepartment    = models.ForeignKey(Department)
-    head = models.ForeignKey(PositionsAtWork,null=True,blank=True)
+    head = models.ForeignKey('self',null=True,blank=True)
 
     class Meta:
         verbose_name = 'PositionsAtWork'
         verbose_name_plural = 'PositionsAtWorks'
 
     def __unicode__(self):
-        pass
+        return self.name
+    def __str__(self):
+        return self.name
 
 class Person(models.Model):
     firstName       = models.CharField(blank=True, max_length=100)
@@ -42,10 +47,19 @@ class Person(models.Model):
         verbose_name = 'Person'
         verbose_name_plural = 'Persons'
 
+    def __unicode__(self):
+        return self.lastName
+    def __str__(self):
+        return self.lastName
+
 class Customer(models.Model):
     # TODO: Define fields here
-    addBy = models.ForeignKey(Person)
-
+    person = models.ForeignKey(Person)
+    addBy = models.ForeignKey(Person,related_name="customer_addby",blank=True,default=None)
+    def __unicode__(self):
+        return self.person
+    def __str__(self):
+        return self.person.lastName
 
     class Meta:
         verbose_name = 'Customer'
@@ -56,9 +70,14 @@ class Customer(models.Model):
 
 class Analyst(models.Model):
     # TODO: Define fields here
-    addBy = models.ForeignKey(Person)
+    person = models.ForeignKey(Person)
+    addBy = models.ForeignKey(Person,related_name="analyst_addby",blank=True,default=None)
     #флаг что это руководитель
     isHead = models.BooleanField(default=False)
+    def __unicode__(self):
+        return self.person
+    def __str__(self):
+        return self.person.lastName
 
     class Meta:
         verbose_name = 'Analyst'
@@ -69,7 +88,12 @@ class Analyst(models.Model):
 
 class Administrator(models.Model):
     # TODO: Define fields here
-    addBy = models.ForeignKey(Person)
+    person = models.ForeignKey(Person)
+    addBy = models.ForeignKey(Person,related_name="administrator_addby",blank=True,default=None)
+    def __unicode__(self):
+        return self.person
+    def __str__(self):
+        return self.person.lastName
 
     class Meta:
         verbose_name = 'Administrator'
