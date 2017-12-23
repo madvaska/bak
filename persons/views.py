@@ -3,4 +3,5 @@ from .models import Person
 # Create your views here.
 
 def persons(request):
-    return render(request, 'persons/persons.html', {})
+    emps = Person.objects.all()
+    return render(request, 'persons/persons.html', {'emp':emps})
