@@ -20,7 +20,9 @@
     <table class="table">
     {% for emp in emps %}
     <tr>
-      <td>{{emp.lastName}}  {{emp.firstName}} {{emp.middleName}}</td> <td> {{emp.positionAtWork}} </td> <td>{{emp.department}}</td>
+      <td>{{emp.lastName}}  {{emp.firstName}} {{emp.middleName}}</td>
+      <td> {{emp.positionAtWork}} </td> <td>{{emp.department}}</td>
+      <td><span class="glyphicon glyphicon-pencil"></span></td>
     </tr>
     {% endfor %}
     </table>
