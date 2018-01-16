@@ -16,6 +16,7 @@ width: 700px;
 
 .menufirstpoint {
 float: left;
+margin: 5px;
 }
 
 .clear {
@@ -23,6 +24,7 @@ clear: both;
 }
 .menupoint {
 float: left;
+margin: 5px;
 }
 
 .login {
