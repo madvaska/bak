@@ -8,8 +8,8 @@ def persons(request):
     return render(request, 'persons/persons.html', {'emps':emps})
 
 
-class PersonCreateView(CreateView):
-    model = Person
-    form_class = FORM_CLASS
-    success_url = 'SUCCESS_URL'
-    template_name = 'TEMPLATE_NAME'
+#class PersonCreateView(CreateView):
+#    model = Person
+#    form_class = FORM_CLASS
+#    success_url = 'SUCCESS_URL'
+#    template_name = 'TEMPLATE_NAME'

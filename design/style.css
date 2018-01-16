@@ -1,0 +1,51 @@
+.main-container {
+  width: 900px;
+  background: #F1F1F1
+
+}
+
+.header {
+width: 900px;
+background-color:#a8a4a4
+}
+
+.logo {
+float: left;
+width: 700px;
+}
+
+.menufirstpoint {
+float: left;
+}
+
+.clear {
+clear: both;
+}
+.menupoint {
+float: left;
+}
+
+.login {
+float: right;
+width: 200px;
+}
+
+.menu {
+width: 900px;
+}
+
+.main-block {
+background-color: red
+}
+
+.left-menu {
+  float: left;
+}
+
+.content {
+  float: right;
+}
+
+.footer {
+
+}
