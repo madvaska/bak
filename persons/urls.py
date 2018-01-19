@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 from . import views
+from persons.views import AddPersons
+from django.views.generic import CreateView
 #from django.contrib import admin
 
 
 urlpatterns = [
     url(r'^$', views.persons, name='сотрудники'),
     url(r'^pers/$', views.persons, name='сотрудники'),
-    url(r'^pers/add', views.persons, name='сотрудники'),
+    url(r'^pers/add', AddPersons.as_view(), name='сотрудники'),
 ]

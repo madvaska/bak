@@ -1,5 +1,6 @@
 from django.db import models
-from .models import Customer,Analyst
+from persons.models import Customer,Analyst
+import datetime
 
 # Create your models here.
 
@@ -46,8 +47,8 @@ class Analyze(models.Model):
     # TODO: Define fields here
     dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now)
     order       = models.ForeignKey(Order)
-    analyst     = models.ForeignKey(Analyst)
-    appointedBy = models.ForeignKey(Analyst)
+    analyst     = models.ForeignKey(Analyst,related_name='analyst')
+    appointedBy = models.ForeignKey(Analyst,related_name='appointedBy')
     comment     = models.TextField()
     #этот флаг означает что измеритель ввел данные и проверил значение
     verifyed    = models.BooleanField(default=False)
@@ -110,7 +111,7 @@ class DataValue(models.Model):
 
 class dataIntValue(DataValue):
     # TODO: Define fields here
-    value   = models.DecimalField()
+    value   = models.DecimalField(max_digits=10,decimal_places=3)
 
     class Meta:
         verbose_name = 'dataIntValue'

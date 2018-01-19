@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic.edit import CreateView
 from .models import Person
 # Create your views here.
 
@@ -6,6 +7,12 @@ def persons(request):
     emps = Person.objects.all()
     #print(emps)
     return render(request, 'persons/persons.html', {'emps':emps})
+
+class AddPersons(CreateView):
+    model = Person
+    fields = ['firstName','middleName','lastName','department','positionAtWork','workSince','dismissed']
+    #print(emps)
+    #return render(request, 'persons/persons.html', {'emps':emps})
 
 
 #class PersonCreateView(CreateView):
