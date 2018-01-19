@@ -16,10 +16,10 @@ class Project(models.Model):
 
 class AnalyzeType(models.Model):
     # TODO: Define fields here
-
+    name = models.CharField(blank=True, max_length=400)
     class Meta:
-        verbose_name = 'OrdesType'
-        verbose_name_plural = 'OrdesTypes'
+        verbose_name = 'AnalyzeType'
+        verbose_name_plural = 'AnalyzeTypes'
 
     def __unicode__(self):
         pass
