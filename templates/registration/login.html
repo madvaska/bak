@@ -1,0 +1,7 @@
+<form   method="post">
+  {%csrf_token%}
+  <h2>ВХОД</h2>
+  {{form.as_p}}
+  <input type="submit" value="Войти">
+  <input type="hidden" name="next" value={{next}}>
+</form>
