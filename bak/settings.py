@@ -123,4 +123,4 @@ STATIC_URL = '/static/'
 #правки необходимые для системы авторизации
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
-LOGIN_REGIRECT_URL = '/welcome/'
+LOGIN_REDIRECT_URL = '/welcome/'
