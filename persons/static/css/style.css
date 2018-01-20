@@ -1,0 +1,71 @@
+.main-container {
+  width: 900px;
+  background: #F1F1F1
+
+}
+
+.header {
+width: 900px;
+background-color:#a8a4a4
+}
+
+.logo {
+float: left;
+width: 700px;
+}
+
+.menufirstpoint {
+float: left;
+margin: 5px;
+}
+
+.clear {
+clear: both;
+}
+.menupoint {
+float: left;
+margin: 5px;
+}
+
+.login {
+float: right;
+width: 200px;
+}
+
+.menu {
+width: 900px;
+}
+
+.main-block {
+background-color: grey;
+}
+
+.contenttable {
+  width: 100%;
+  border-collapse: separate;
+  border: 1px solid black;
+  border-spacing: 2px;
+}
+.tdhead {
+  text-align: center;
+}
+
+td {
+  border: 1px solid lightgray;
+  padding: 3px;
+}
+
+.left-menu {
+  float: left;
+  width: 200px;
+}
+
+.content {
+  float: right;
+  width: 700px;
+  background-color: white;
+}
+
+.footer {
+
+}
