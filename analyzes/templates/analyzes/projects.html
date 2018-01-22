@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+{% block content %}
+
+Таблица
+    <table class="table">
+    {% for elem in projects %}
+    <tr>
+      <td>{{elem.name}}</td>
+      <td><span class="glyphicon glyphicon-pencil"></span></td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
