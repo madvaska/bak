@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze
-from persons.models import Customer
+from persons.models import Customer,Person
 from django.views.generic.edit import CreateView
 
 
@@ -15,16 +15,34 @@ def orders(request):
     else:
         str1 = ''
         orders = Order.objects.all()
+
         if request.POST.get('type', default=None) is None:
             pass
         else:
+
             if request.POST.get('type', default=None) != '0':
                 print(request.POST.get('type', default=None))
                 type1 = AnalyzeType.objects.get(name__exact=request.POST.get('type', default=None))
                 orders = orders.filter(type__exact=type1)
-        if request.POST.get('custormer', default=None) is None:
+        if request.POST.get('customer', default=None) is None:
             pass
+        else:
+            if request.POST.get('customer', default=None) != '0':
+                print(request.POST.get('customer', default=None))
+                person1 = Person.objects.get(lastName__exact=request.POST.get('customer', default=None))
+                customer1 = Customer.objects.get(person__exact=person1)
+                print(customer1)
+                print("====")
+                orders = orders.filter(customer__exact=customer1)
+
+
         if request.POST.get('project', default=None) is None:
+            pass
+        else:
+            if request.POST.get('project', default=None) != '0':
+                print(request.POST.get('project', default=None))
+                project1 = Project.objects.get(name__exact=request.POST.get('project', default=None))
+                orders = orders.filter(project__exact=project1)
             pass
         if request.POST.get('executed', default=None) is None:
             pass
