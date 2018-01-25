@@ -5,21 +5,33 @@
   <select class="select1" name="type">
     <option value="0">Типы анализа(Все)</option>
     {% for elem in types %}
+    {% if elem.name == typeselected %}
+      <option value="{{elem}}" selected>{{elem}}</option>
+    {% else %}
       <option value="{{elem}}">{{elem}}</option>
+    {% endif %}
     {% endfor %}
   </select>
   <br />
   <select class="select1" name="project">
     <option value="0">Проекты(Все)</option>
     {% for elem in projects %}
+    {% if elem.name == projectselected %}
+      <option value="{{elem}}" selected>{{elem}}</option>
+    {% else %}
       <option value="{{elem}}">{{elem}}</option>
+    {% endif %}
     {% endfor %}
   </select>
   <br />
   <select class="select1" name="customer">
     <option value="0">Заказчики(Все)</option>
     {% for elem in customers %}
+    {% if elem.person.lastName == customerselected %}
+      <option value="{{elem}}" selected>{{elem}}</option>
+    {% else %}
       <option value="{{elem}}">{{elem}}</option>
+    {% endif %}
     {% endfor %}
   </select>
   <br />

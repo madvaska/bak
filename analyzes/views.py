@@ -10,45 +10,50 @@ def orders(request):
     projects = Project.objects.all()
     customers = Customer.objects.all()
     print(request.POST)
+    typeselected = ""
+    customerselected = ''
+    projectselected = ''
     if request.POST.get('but1', default=None) is None:
         orders = Order.objects.all()
     else:
         str1 = ''
         orders = Order.objects.all()
-
-        if request.POST.get('type', default=None) is None:
+        typeselected = request.POST.get('type', default=None)
+        if typeselected is None:
             pass
         else:
-
-            if request.POST.get('type', default=None) != '0':
-                print(request.POST.get('type', default=None))
-                type1 = AnalyzeType.objects.get(name__exact=request.POST.get('type', default=None))
+            if typeselected != '0':
+                type1 = AnalyzeType.objects.get(name__exact=typeselected)
                 orders = orders.filter(type__exact=type1)
-        if request.POST.get('customer', default=None) is None:
+        customerselected = request.POST.get('customer', default=None)
+        if customerselected is None:
             pass
         else:
-            if request.POST.get('customer', default=None) != '0':
-                print(request.POST.get('customer', default=None))
-                person1 = Person.objects.get(lastName__exact=request.POST.get('customer', default=None))
+            if customerselected != '0':
+                person1 = Person.objects.get(lastName__exact=customerselected)
                 customer1 = Customer.objects.get(person__exact=person1)
-                print(customer1)
-                print("====")
                 orders = orders.filter(customer__exact=customer1)
 
-
-        if request.POST.get('project', default=None) is None:
+        projectselected = request.POST.get('project', default=None)
+        if projectselected is None:
             pass
         else:
-            if request.POST.get('project', default=None) != '0':
-                print(request.POST.get('project', default=None))
-                project1 = Project.objects.get(name__exact=request.POST.get('project', default=None))
+            if projectselected != '0':
+                project1 = Project.objects.get(name__exact=projectselected)
                 orders = orders.filter(project__exact=project1)
             pass
         if request.POST.get('executed', default=None) is None:
             pass
 
-    #print(emps)
-    return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,'projects':projects})
+    if typeselected is None:
+        typeselected = ''
+    if customerselected is None:
+        customerselected = ''
+    if projectselected is None:
+        projectselected = ''
+    print("dd="+customerselected)
+    return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,
+    'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected})
 
 
 class AddOrder(CreateView):
