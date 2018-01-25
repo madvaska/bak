@@ -1,5 +1,39 @@
 {% extends "index.html" %}
+{% block left_menu %}
+<form class="" action="" method="post">
+  {% csrf_token %}
+  <select class="select1" name="type">
+    <option value="0">Типы анализа(Все)</option>
+    {% for elem in types %}
+      <option value="{{elem}}">{{elem}}</option>
+    {% endfor %}
+  </select>
+  <br />
+  <select class="select1" name="project">
+    <option value="0">Проекты(Все)</option>
+    {% for elem in projects %}
+      <option value="{{elem}}">{{elem}}</option>
+    {% endfor %}
+  </select>
+  <br />
+  <select class="select1" name="customer">
+    <option value="0">Заказчики(Все)</option>
+    {% for elem in customers %}
+      <option value="{{elem}}">{{elem}}</option>
+    {% endfor %}
+  </select>
+  <br />
+  <label>
+    <input type="checkbox" name="executed" value="on"> Выполнен
+    </label>
+  <br />
+  <input type="submit" name="but1" value="Отобрать">
+  <input type="submit" name="but2" value="Отключить отбор">
+</form>
+{% endblock %}
+
 {% block content %}
+
 
 Таблица
     <table class="table">

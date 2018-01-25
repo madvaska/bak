@@ -6,9 +6,31 @@ from django.views.generic.edit import CreateView
 
 # Create your views here.
 def orders(request):
-    orders = Order.objects.all()
+    types = AnalyzeType.objects.all()
+    projects = Project.objects.all()
+    customers = Customer.objects.all()
+    print(request.POST)
+    if request.POST.get('but1', default=None) is None:
+        orders = Order.objects.all()
+    else:
+        str1 = ''
+        orders = Order.objects.all()
+        if request.POST.get('type', default=None) is None:
+            pass
+        else:
+            if request.POST.get('type', default=None) != '0':
+                print(request.POST.get('type', default=None))
+                type1 = AnalyzeType.objects.get(name__exact=request.POST.get('type', default=None))
+                orders = orders.filter(type__exact=type1)
+        if request.POST.get('custormer', default=None) is None:
+            pass
+        if request.POST.get('project', default=None) is None:
+            pass
+        if request.POST.get('executed', default=None) is None:
+            pass
+
     #print(emps)
-    return render(request, 'analyzes/orders.html', {'orders':orders})
+    return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,'projects':projects})
 
 
 class AddOrder(CreateView):

@@ -13,6 +13,8 @@ class Project(models.Model):
 
     def __unicode__(self):
         pass
+    def __str__(self):
+        return(self.name)
 
 class AnalyzeType(models.Model):
     # TODO: Define fields here
@@ -22,6 +24,10 @@ class AnalyzeType(models.Model):
         verbose_name_plural = 'AnalyzeTypes'
 
     def __unicode__(self):
+        return(self.name)
+        pass
+    def __str__(self):
+        return(self.name)
         pass
 
 class Order(models.Model):
@@ -42,6 +48,8 @@ class Order(models.Model):
 
     def __unicode__(self):
         pass
+    def __str__(self):
+        return(self.code)
 
 class Analyze(models.Model):
     # TODO: Define fields here
@@ -59,6 +67,8 @@ class Analyze(models.Model):
 
     def __unicode__(self):
         pass
+    def __str__(self):
+        return(self.order)
 
 
 class AnalyzeDataFormat(models.Model):
@@ -74,6 +84,8 @@ class AnalyzeDataFormat(models.Model):
 
     def __unicode__(self):
         pass
+    def __str__(self):
+        return(self.name)
 
 class DataFormatField(models.Model):
     # TODO: Define fields here
