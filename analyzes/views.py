@@ -2,10 +2,11 @@ from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze
 from persons.models import Customer,Person
 from django.views.generic.edit import CreateView
-
+from django.core.paginator import Paginator
+from django.core.paginator import EmptyPage
 
 # Create your views here.
-def orders(request):
+def orders(request, page):
     types = AnalyzeType.objects.all()
     projects = Project.objects.all()
     customers = Customer.objects.all()
@@ -52,6 +53,16 @@ def orders(request):
     if projectselected is None:
         projectselected = ''
     print("dd="+customerselected)
+    orders = Paginator(orders,1)
+    if page is None:
+        page_num = 1
+    else:
+        page_num = page
+    try:
+        orders = orders.page(page_num)
+    except EmptyPage:
+        orders = orders.page(1)
+    print(orders.paginator.num_pages)
     return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,
     'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected})
 

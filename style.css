@@ -38,3 +38,16 @@ background-color: red
 .footer {
 
 }
+#pagination{
+  margin-top: 20px;
+}
+
+#pagination #previous-page{
+  float: left;
+}
+#pagination #num-pages{
+  float: center;
+}
+#pagination #next-page{
+  float: right;
+}
