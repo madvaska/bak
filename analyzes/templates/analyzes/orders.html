@@ -62,4 +62,35 @@
     </tr>
     {% endfor %}
     </table>
+    {% if orders.paginator.num_pages > 1 %}
+
+    <div id="pagination">
+      {% if orders.has_previous %}
+        <div id="previous-page">
+          <a href={% url "orders"%}{{ orders.previous_page_number }} >
+          &lt</a>
+        </div>
+      {% endif %}
+    {% if orders.has_next %}
+      <div id="next-page">
+        <a href={% url "orders" %}{{orders.next_page_number}}>&gt</a>
+      </div>
+    {% endif %}
+    </div>
+    <div id="num-pages">
+    {% for pn in orders.paginator.page_range  %}
+      {% if not forloop.first %}
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+      {% endif %}
+      {% if orders.number != pn %}
+        <a href={% url "orders" %}{{pn}}>
+      {% endif %}
+      {{pn}}
+      {% if orders.number != pn %}
+        </a>
+      {% endif %}
+    {% endfor %}
+
+        </div>
+    {% endif %}
 {% endblock %}

@@ -26,7 +26,7 @@ from analyzes.views import AddAnalyze
 
 urlpatterns = [
     #url(r'^$', views.persons, name='сотрудники'),
-    url(r'^o/$', views.orders, name='сотрудники'),
+    url(r'^o/(?P<page>\d+)?$', views.orders, name='orders'),
     url(r'^o/add', AddOrder.as_view(), name='сотрудники'),
     url(r'^at/$', views.analyzeType, name='Типы анализов'),
     url(r'^at/add', AddAnalyzeType.as_view(), name='Добавить новый тип анализов'),
