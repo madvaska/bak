@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze
 from persons.models import Customer,Person
 from django.views.generic.edit import CreateView
+from django.core.paginator import Paginator
 
 
 # Create your views here.
