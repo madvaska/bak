@@ -18,7 +18,8 @@ class Project(models.Model):
 
 class AnalyzeType(models.Model):
     # TODO: Define fields here
-    name = models.CharField(blank=True, max_length=400)
+    code = models.CharField(unique=True,max_length=10)
+    name = models.CharField(unique=True,max_length=400)
     class Meta:
         verbose_name = 'AnalyzeType'
         verbose_name_plural = 'AnalyzeTypes'
@@ -27,7 +28,7 @@ class AnalyzeType(models.Model):
         return(self.name)
         pass
     def __str__(self):
-        return(self.name)
+        return(self.code+"  "+self.name)
         pass
 
 class Order(models.Model):

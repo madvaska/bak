@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 class Department(models.Model):
@@ -20,7 +20,7 @@ class Department(models.Model):
 
 class PositionsAtWork(models.Model):
     # TODO: Define fields here
-    name            = models.CharField(blank=True, max_length=100)
+    name            = models.CharField(max_length=100)
     atDepartment    = models.ForeignKey(Department)
     head = models.ForeignKey('self',null=True,blank=True)
 
@@ -34,13 +34,14 @@ class PositionsAtWork(models.Model):
         return self.name
 
 class Person(models.Model):
-    firstName       = models.CharField(blank=True, max_length=100)
-    middleName      = models.CharField(blank=True, max_length=100)
-    lastName        = models.CharField(blank=True, max_length=100)
+    #firstName       = models.CharField(blank=True, max_length=100)
+    #middleName      = models.CharField(blank=True, max_length=100)
+    #lastName        = models.CharField(blank=True, max_length=100)
     department      = models.ForeignKey(Department)
     positionAtWork  = models.ForeignKey(PositionsAtWork)
     workSince       = models.DateField()
     dismissed       = models.DateField(null=True,blank=True)
+    user            = models.ForeignKey(User)
     #подумать в какой таблице безопасней...
     #password        = models.CharField(blank=True, max_length=100)
     class Meta:
@@ -48,9 +49,9 @@ class Person(models.Model):
         verbose_name_plural = 'Persons'
 
     def __unicode__(self):
-        return self.lastName
+        return self.user.username
     def __str__(self):
-        return self.lastName
+        return self.user.username
 
 class Customer(models.Model):
     # TODO: Define fields here
