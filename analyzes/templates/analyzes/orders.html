@@ -47,8 +47,18 @@
 {% block content %}
 
 
-Таблица
+<h2>Таблица заказов</h2>
     <table class="table">
+      <tr>
+        <td>Дата</td>
+        <td>Код/Код образца</td>
+        <td>Тип </td>
+        <td>Заказчик</td>
+        <td>Проект</td>
+        <td>Комментарий</td>
+        <td> Выполнен/Нет </td>
+        <td>Просмотр</td>
+      </tr>
     {% for order in orders %}
     <tr>
       <td>{{order.dateTime}}</td>
@@ -57,8 +67,22 @@
       <td>{{order.customer}}</td>
       <td>{{order.project}}</td>
       <td>{{order.comment}}</td>
-      <td>{{order.executed}}</td>
-      <td><span class="glyphicon glyphicon-pencil"></span></td>
+      <td>
+        {% if order.executed %}
+        <a href="#">
+          <span class="glyphicon glyphicon-ok-circle"></span>
+        </a>
+        {% else %}
+        <a href="#">
+          <span class="glyphicon glyphicon-plus"></span>
+        </a>
+        {% endif %}
+      </td>
+      <td>
+        <a href={% url "order" %}{{order.pk}}>
+          <span class="glyphicon glyphicon-pencil"></span>
+        </a>
+      </td>
     </tr>
     {% endfor %}
     </table>

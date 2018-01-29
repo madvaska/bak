@@ -4,6 +4,9 @@ from persons.models import Customer,Person
 from django.views.generic.edit import CreateView
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import redirect
+from django.urls import reverse
 
 # Create your views here.
 def orders(request, page):
@@ -66,46 +69,44 @@ def orders(request, page):
     return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,
     'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected})
 
-
-class AddOrder(CreateView):
-    model = Order
-    fields = ['dateTime','code','codeOfSample','type','customer','project','comment','executed']
-    #print('emps')
-    #return render(request, 'persons/persons.html', {'emps':emps})
+def order_details(request,id):
+    if id is None:
+        id = 1
+    try:
+        elem = Order.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        print("нет записи в таблице order id = "+id)
+        return redirect(reverse('orders',kwargs={'page':2}))
+        pass
+        #raise
+    if elem.executed:
+        analyze = Analyze.objects.get(order=elem)
+        print(analyze.pk)
+    else:
+        analyze=None
+    return render(request, 'analyzes/order_details.html', {'elem':elem, 'analyze':analyze})
 
 def analyzeType(request):
     analyzeTypes = AnalyzeType.objects.all()
     #print(emps)
     return render(request, 'analyzes/analyzetypes.html', {'analyzeTypes':analyzeTypes})
 
-class AddAnalyzeType(CreateView):
-    model = AnalyzeType
-    fields = ['name']
-    #print('emps')
-    #return render(request, 'persons/persons.html', {'emps':emps})
-
 def projects(request):
     projects = Project.objects.all()
     #print(emps)
     return render(request, 'analyzes/projects.html', {'projects':projects})
-
-class AddProject(CreateView):
-    model = Project
-    fields = ['name']
-    #print('emps')
-    #return render(request, 'persons/persons.html', {'emps':emps})
 
 def analyzes(request):
     analyzes = Analyze.objects.all()
     #print(emps)
     return render(request, 'analyzes/projects.html', {'analyzes':analyzes})
 
-class AddAnalyze(CreateView):
-    model = Analyze
-    fields = ['dateTime']
-    # Создается на основании заявки
-    #print('emps')
-    #return render(request, 'persons/persons.html', {'emps':emps})
+def analyze_details(request,id):
+    analyze = Analyze.objects.get(pk=id)
+    print(analyze)
+    return render(request, 'analyzes/analyze_details.html', {'analyze':analyze})
+
+
 
 
 #    url(r'^at/$', views.analyzeType, name='Типы анализов'),

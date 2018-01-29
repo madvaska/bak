@@ -18,20 +18,18 @@ from . import views
 from persons.views import AddPersons
 from django.views.generic import CreateView
 #from django.contrib import admin
-from analyzes.views import AddOrder
-from analyzes.views import AddAnalyzeType
-from analyzes.views import AddProject
-from analyzes.views import AddAnalyze
-
+from analyzes.twviews import AddAnalyze, AddProject, AddAnalyzeType, AddOrder
 
 urlpatterns = [
     #url(r'^$', views.persons, name='сотрудники'),
     url(r'^o/(?P<page>\d+)?$', views.orders, name='orders'),
-    url(r'^o/add', AddOrder.as_view(), name='сотрудники'),
+    url(r'^o/view/(?P<id>\d+)?$', views.order_details, name='order'),
+    url(r'^o/add', AddOrder.as_view(), name='add_order'),
     url(r'^at/$', views.analyzeType, name='Типы анализов'),
     url(r'^at/add', AddAnalyzeType.as_view(), name='Добавить новый тип анализов'),
     url(r'^pr/$', views.projects, name='Проекты'),
     url(r'^pr/add', AddProject.as_view(), name='Добавить новый проект'),
     url(r'^a/$', views.analyzes, name='Анализы'),
-    url(r'^a/add', AddAnalyze.as_view(), name='Добавить новый анализ'),
+    url(r'^a/view/(?P<id>\d+)?$', views.analyze_details, name='analyze'),
+    url(r'^a/add', AddAnalyze.as_view(), name='add_analyze'),
 ]

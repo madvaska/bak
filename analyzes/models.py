@@ -68,7 +68,7 @@ class Analyze(models.Model):
     def __unicode__(self):
         pass
     def __str__(self):
-        return(self.order)
+        return(self.order.code)
 
 
 class AnalyzeDataFormat(models.Model):

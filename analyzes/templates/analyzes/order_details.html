@@ -1,0 +1,31 @@
+{% extends "index.html" %}
+{% block left_menu %}
+{% endblock %}
+
+{% block content %}
+
+
+Таблица
+    <table class="table">
+    <tr>
+      <td>{{elem.dateTime}}</td>
+      <td>{{elem.code}}  {{elems.codeOfSample}}</td>
+      <td> {{elem.type}} </td>
+      <td>{{elem.customer}}</td>
+      <td>{{elem.project}}</td>
+      <td>{{elem.comment}}</td>
+      <td>
+        {% if elem.executed %}
+        <a href={% url "analyze" %}{{analyze.id}}>
+          <span class="glyphicon glyphicon-ok-circle"></span>
+        </a>
+        {% else %}
+        <a href={% url "add_analyze" %}>
+          <span class="glyphicon glyphicon-plus"></span>
+        </a>
+        {% endif %}
+      </td>
+      <td><span class="glyphicon glyphicon-pencil"></span></td>
+    </tr>
+    </table>
+{% endblock %}
