@@ -14,7 +14,7 @@ class AddOrder(CreateView):
 
 class AddAnalyzeType(CreateView):
     model = AnalyzeType
-    fields = ['name']
+    fields = ['code','name']
     #print('emps')
     #return render(request, 'persons/persons.html', {'emps':emps})
 
@@ -26,7 +26,23 @@ class AddProject(CreateView):
 
 class AddAnalyze(CreateView):
     model = Analyze
-    fields = ['dateTime']
+    fields = ['dateTime','order','analyst','appointedBy','comment','verifyed']
+
+    def get_context_data(self, **kwargs):
+        context = super(AddAnalyze,self).get_context_data(**kwargs)
+        #print (self.kwargs)
+        #or elem in kwargs:
+        #    print("elem = "+elem)
+        order = self.kwargs['order']
+        if order is None:
+            pass
+        else:
+            self.initial['order']=Order.objects.get(code=order)
+            print(Order.objects.get(code=order))
+        #print('Попали внутрь t_context_data. order = '+order)
+        print(context)
+        self.initial["verifyed"]=False
+        return context
     # Создается на основании заявки
     #print('emps')
     #return render(request, 'persons/persons.html', {'emps':emps})

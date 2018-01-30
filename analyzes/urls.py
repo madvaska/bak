@@ -31,5 +31,5 @@ urlpatterns = [
     url(r'^pr/add', AddProject.as_view(), name='Добавить новый проект'),
     url(r'^a/$', views.analyzes, name='Анализы'),
     url(r'^a/view/(?P<id>\d+)?$', views.analyze_details, name='analyze'),
-    url(r'^a/add', AddAnalyze.as_view(), name='add_analyze'),
+    url(r'^a/add/(?P<order>\d+)?$', AddAnalyze.as_view(), name='add_analyze'),
 ]

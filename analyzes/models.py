@@ -18,8 +18,8 @@ class Project(models.Model):
 
 class AnalyzeType(models.Model):
     # TODO: Define fields here
-    code = models.CharField(unique=True,max_length=10)
-    name = models.CharField(unique=True,max_length=400)
+    code = models.CharField(unique=True,max_length=10, verbose_name='Код')
+    name = models.CharField(unique=True,max_length=400, verbose_name='Наименование')
     class Meta:
         verbose_name = 'AnalyzeType'
         verbose_name_plural = 'AnalyzeTypes'
@@ -54,13 +54,13 @@ class Order(models.Model):
 
 class Analyze(models.Model):
     # TODO: Define fields here
-    dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now)
-    order       = models.ForeignKey(Order)
-    analyst     = models.ForeignKey(Analyst,related_name='analyst')
-    appointedBy = models.ForeignKey(Analyst,related_name='appointedBy')
-    comment     = models.TextField()
+    dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now, verbose_name='Дата')
+    order       = models.ForeignKey(Order, verbose_name='Заявка')
+    analyst     = models.ForeignKey(Analyst,related_name='analyst', verbose_name='Исполнитель')
+    appointedBy = models.ForeignKey(Analyst,related_name='appointedBy', verbose_name='Назначен')
+    comment     = models.TextField(verbose_name='Комментарий')
     #этот флаг означает что измеритель ввел данные и проверил значение
-    verifyed    = models.BooleanField(default=False)
+    verifyed    = models.BooleanField(default=False, verbose_name='Данные введены ии проверены')
 
     class Meta:
         verbose_name = 'Analyze'

@@ -60,7 +60,7 @@ class Customer(models.Model):
     def __unicode__(self):
         return self.person
     def __str__(self):
-        return self.person.lastName
+        return self.person.user.username
 
     class Meta:
         verbose_name = 'Customer'
@@ -78,7 +78,7 @@ class Analyst(models.Model):
     def __unicode__(self):
         return self.person
     def __str__(self):
-        return self.person.lastName
+        return self.person.user.username
 
     class Meta:
         verbose_name = 'Analyst'
