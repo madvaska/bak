@@ -7,9 +7,15 @@ from django.core.paginator import EmptyPage
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.core.exceptions import PermissionDenied
 
 # Create your views here.
 def orders(request, page):
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+        print('неавторизованный')
+        return render(request, 'analyzes/orders.html')
+
     types = AnalyzeType.objects.all()
     projects = Project.objects.all()
     customers = Customer.objects.all()
@@ -97,9 +103,13 @@ def projects(request):
     return render(request, 'analyzes/projects.html', {'projects':projects})
 
 def analyzes(request):
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+        print('неавторизованный')
+        return render(request, 'analyzes/analyzes.html')
     analyzes = Analyze.objects.all()
     #print(emps)
-    return render(request, 'analyzes/projects.html', {'analyzes':analyzes})
+    return render(request, 'analyzes/analyzes.html', {'analyzes':analyzes})
 
 def analyze_details(request,id):
     analyze = Analyze.objects.get(pk=id)

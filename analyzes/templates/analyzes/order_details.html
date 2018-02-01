@@ -20,7 +20,7 @@
           <span class="glyphicon glyphicon-ok-circle"></span>
         </a>
         {% else %}
-        <a href={% url "add_analyze" %}>
+        <a href={% url "add_analyze" %}{{elem.code}}>
           <span class="glyphicon glyphicon-plus"></span>
         </a>
         {% endif %}
