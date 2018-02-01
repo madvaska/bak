@@ -21,7 +21,6 @@ from django.views.generic import CreateView
 
 
 urlpatterns = [
-    url(r'^$', views.persons, name='сотрудники'),
-    url(r'^pers/$', views.persons, name='сотрудники'),
+    url(r'^$', views.persons, name='users'),
     url(r'^pers/add', AddPersons.as_view(), name='сотрудники'),
 ]

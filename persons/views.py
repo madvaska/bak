@@ -10,7 +10,7 @@ def persons(request):
 
 class AddPersons(CreateView):
     model = Person
-    fields = ['firstName','middleName','lastName','department','positionAtWork','workSince','dismissed']
+    fields = ['user','department','positionAtWork','workSince','dismissed']
     #print(emps)
     #return render(request, 'persons/persons.html', {'emps':emps})
 

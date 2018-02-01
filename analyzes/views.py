@@ -92,10 +92,10 @@ def order_details(request,id):
         analyze=None
     return render(request, 'analyzes/order_details.html', {'elem':elem, 'analyze':analyze})
 
-def analyzeType(request):
-    analyzeTypes = AnalyzeType.objects.all()
+def analyzeTypes(request):
+    types = AnalyzeType.objects.all()
     #print(emps)
-    return render(request, 'analyzes/analyzetypes.html', {'analyzeTypes':analyzeTypes})
+    return render(request, 'analyzes/analyzetypes.html', {'analyzetypes':types})
 
 def projects(request):
     projects = Project.objects.all()

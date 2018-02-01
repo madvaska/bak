@@ -4,13 +4,13 @@ from django.contrib.auth.models import User
 
 class Department(models.Model):
     # TODO: Define fields here
-    name        = models.CharField(blank=True, max_length=100)
-    parent      = models.ForeignKey('self', blank=True, null = True)
+    name        = models.CharField(blank=True, max_length=100, verbose_name='Название подразделения')
+    parent      = models.ForeignKey('self', blank=True, null = True, verbose_name='Родитель')
 
 
     class Meta:
-        verbose_name = 'Department'
-        verbose_name_plural = 'Departments'
+        verbose_name = 'Подразделение'
+        verbose_name_plural = 'Подразделения'
 
     def __unicode__(self):
         return self.name
@@ -20,13 +20,13 @@ class Department(models.Model):
 
 class PositionsAtWork(models.Model):
     # TODO: Define fields here
-    name            = models.CharField(max_length=100)
-    atDepartment    = models.ForeignKey(Department)
-    head = models.ForeignKey('self',null=True,blank=True)
+    name            = models.CharField(max_length=100, verbose_name='Должность')
+    atDepartment    = models.ForeignKey(Department, verbose_name='Подразделение')
+    head = models.ForeignKey('self',null=True,blank=True, verbose_name='Руководитель')
 
     class Meta:
-        verbose_name = 'PositionsAtWork'
-        verbose_name_plural = 'PositionsAtWorks'
+        verbose_name = 'Занимаемая должность'
+        verbose_name_plural = 'Занимаемые должности'
 
     def __unicode__(self):
         return self.name
@@ -37,16 +37,16 @@ class Person(models.Model):
     #firstName       = models.CharField(blank=True, max_length=100)
     #middleName      = models.CharField(blank=True, max_length=100)
     #lastName        = models.CharField(blank=True, max_length=100)
-    department      = models.ForeignKey(Department)
-    positionAtWork  = models.ForeignKey(PositionsAtWork)
-    workSince       = models.DateField()
-    dismissed       = models.DateField(null=True,blank=True)
-    user            = models.ForeignKey(User)
+    department      = models.ForeignKey(Department, verbose_name='Подразделения')
+    positionAtWork  = models.ForeignKey(PositionsAtWork, verbose_name='Должность')
+    workSince       = models.DateField(verbose_name='Работает с ')
+    dismissed       = models.DateField(null=True,blank=True, verbose_name='Уволен с ')
+    user            = models.ForeignKey(User, verbose_name='Пользователь')
     #подумать в какой таблице безопасней...
     #password        = models.CharField(blank=True, max_length=100)
     class Meta:
-        verbose_name = 'Person'
-        verbose_name_plural = 'Persons'
+        verbose_name = 'Сотрудник'
+        verbose_name_plural = 'Сотрудники'
 
     def __unicode__(self):
         return self.user.username
@@ -55,24 +55,26 @@ class Person(models.Model):
 
 class Customer(models.Model):
     # TODO: Define fields here
-    person = models.ForeignKey(Person)
-    addBy = models.ForeignKey(Person,related_name="customer_addby",blank=True,default=None)
+    person = models.ForeignKey(Person, verbose_name='Заказчик')
+    addBy = models.ForeignKey(Person,related_name="customer_addby",blank=True,
+    default=None, verbose_name='Добавлен пользователем')
     def __unicode__(self):
         return self.person
     def __str__(self):
         return self.person.user.username
 
     class Meta:
-        verbose_name = 'Customer'
-        verbose_name_plural = 'Customers'
+        verbose_name = 'Заказчик'
+        verbose_name_plural = 'Заказчики'
 
     def __unicode__(self):
         pass
 
 class Analyst(models.Model):
     # TODO: Define fields here
-    person = models.ForeignKey(Person)
-    addBy = models.ForeignKey(Person,related_name="analyst_addby",blank=True,default=None)
+    person = models.ForeignKey(Person, verbose_name='Измеритель')
+    addBy = models.ForeignKey(Person,related_name="analyst_addby",blank=True,
+    default=None, verbose_name='Добавлен пользователем')
     #флаг что это руководитель
     isHead = models.BooleanField(default=False)
     def __unicode__(self):
@@ -81,24 +83,25 @@ class Analyst(models.Model):
         return self.person.user.username
 
     class Meta:
-        verbose_name = 'Analyst'
-        verbose_name_plural = 'Analysts'
+        verbose_name = 'Измеритель'
+        verbose_name_plural = 'Измерители'
 
     def __unicode__(self):
         pass
 
 class Administrator(models.Model):
     # TODO: Define fields here
-    person = models.ForeignKey(Person)
-    addBy = models.ForeignKey(Person,related_name="administrator_addby",blank=True,default=None)
+    person = models.ForeignKey(Person, verbose_name='Администратор')
+    addBy = models.ForeignKey(Person,related_name="administrator_addby",
+    blank=True,default=None, verbose_name='Добавлен пользователем ')
     def __unicode__(self):
         return self.person
     def __str__(self):
         return self.person.lastName
 
     class Meta:
-        verbose_name = 'Administrator'
-        verbose_name_plural = 'Administrators'
+        verbose_name = 'Администратор'
+        verbose_name_plural = 'Администраторы'
 
     def __unicode__(self):
         pass

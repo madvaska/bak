@@ -3,7 +3,8 @@
 <table class="table">
 {% for emp in emps %}
 <tr>
-  <td>{{emp.lastName}}  {{emp.firstName}} {{emp.middleName}}</td>
+  <td>{{emp.user.username}}</td>
+  <td>{{emp.user.last_name}}  {{emp.user.first_name}} </td>
   <td> {{emp.positionAtWork}} </td> <td>{{emp.department}}</td>
   <td><span class="glyphicon glyphicon-pencil"></span></td>
 </tr>
