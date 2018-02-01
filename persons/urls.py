@@ -15,12 +15,18 @@ Including another URLconf
 """
 from django.conf.urls import url
 from . import views
-from persons.views import AddPersons
+from persons.views import AddPersons, AddCustomer, AddAnalyst, AddAdministrator
 from django.views.generic import CreateView
 #from django.contrib import admin
 
 
 urlpatterns = [
     url(r'^$', views.persons, name='users'),
-    url(r'^pers/add', AddPersons.as_view(), name='сотрудники'),
+    url(r'^pers/add', AddPersons.as_view(), name='adduser'),
+    url(r'^c/$', views.customers, name='customers'),
+    url(r'^c/add', AddCustomer.as_view(), name='addcustomer'),
+    url(r'^a/$', views.analysts, name='analysts'),
+    url(r'^a/add', AddAnalyst.as_view(), name='addanalyst'),
+    url(r'^x/$', views.administrators, name='administrators'),
+    url(r'^x/add', AddAdministrator.as_view(), name='addadministrator'),
 ]

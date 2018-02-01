@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.edit import CreateView
-from .models import Person
+from .models import Person, Customer, Analyst, Administrator
 # Create your views here.
 
 def persons(request):
@@ -11,8 +11,38 @@ def persons(request):
 class AddPersons(CreateView):
     model = Person
     fields = ['user','department','positionAtWork','workSince','dismissed']
+    success_url="/persons/"
     #print(emps)
     #return render(request, 'persons/persons.html', {'emps':emps})
+def customers(request):
+    emps = Customer.objects.all()
+    #print(emps)
+    return render(request, 'persons/customers.html', {'emps':emps})
+
+class AddCustomer(CreateView):
+    model = Customer
+    fields = ['person','AddBy']
+    success_url="/persons/c/"
+
+def analysts(request):
+    emps = Analyst.objects.all()
+    #print(emps)
+    return render(request, 'persons/analysts.html', {'emps':emps})
+
+class AddAnalyst(CreateView):
+    model = Analyst
+    fields = ['person','AddBy','isHead']
+    success_url="/persons/a/"
+
+def administrators(request):
+    emps = Administrator.objects.all()
+    #print(emps)
+    return render(request, 'persons/administrators.html', {'emps':emps})
+
+class AddAdministrator(CreateView):
+    model = Administrator
+    fields = ['person','AddBy']
+    success_url="/persons/x/"
 
 
 #class PersonCreateView(CreateView):

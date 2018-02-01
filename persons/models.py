@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Department(models.Model):
     # TODO: Define fields here
-    name        = models.CharField(blank=True, max_length=100, verbose_name='Название подразделения')
+    name        = models.CharField(blank=True, max_length=100, verbose_name='Название подразделения',unique=True)
     parent      = models.ForeignKey('self', blank=True, null = True, verbose_name='Родитель')
 
 
@@ -41,7 +41,7 @@ class Person(models.Model):
     positionAtWork  = models.ForeignKey(PositionsAtWork, verbose_name='Должность')
     workSince       = models.DateField(verbose_name='Работает с ')
     dismissed       = models.DateField(null=True,blank=True, verbose_name='Уволен с ')
-    user            = models.ForeignKey(User, verbose_name='Пользователь')
+    user            = models.ForeignKey(User, verbose_name='Пользователь',unique=True)
     #подумать в какой таблице безопасней...
     #password        = models.CharField(blank=True, max_length=100)
     class Meta:
@@ -55,7 +55,7 @@ class Person(models.Model):
 
 class Customer(models.Model):
     # TODO: Define fields here
-    person = models.ForeignKey(Person, verbose_name='Заказчик')
+    person = models.ForeignKey(Person, verbose_name='Заказчик',unique=True)
     addBy = models.ForeignKey(Person,related_name="customer_addby",blank=True,
     default=None, verbose_name='Добавлен пользователем')
     def __unicode__(self):
@@ -72,7 +72,7 @@ class Customer(models.Model):
 
 class Analyst(models.Model):
     # TODO: Define fields here
-    person = models.ForeignKey(Person, verbose_name='Измеритель')
+    person = models.ForeignKey(Person, verbose_name='Измеритель',unique=True)
     addBy = models.ForeignKey(Person,related_name="analyst_addby",blank=True,
     default=None, verbose_name='Добавлен пользователем')
     #флаг что это руководитель
@@ -91,7 +91,7 @@ class Analyst(models.Model):
 
 class Administrator(models.Model):
     # TODO: Define fields here
-    person = models.ForeignKey(Person, verbose_name='Администратор')
+    person = models.ForeignKey(Person, verbose_name='Администратор',unique=True)
     addBy = models.ForeignKey(Person,related_name="administrator_addby",
     blank=True,default=None, verbose_name='Добавлен пользователем ')
     def __unicode__(self):

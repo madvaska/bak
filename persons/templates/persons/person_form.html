@@ -1,4 +1,8 @@
+{% extends "index.html" %}
+{% block content %}
+Добавить нового сотрудника (пользователя добавляет СУПЕРВАЙЗЕР)
 <form class="main"  method="post">{% csrf_token %}
 {{form.as_p}}
-<input type="submit"  value="Добавить">
+<input type="submit"  value="Добавить сотрудника">
 </form>
+  {% endblock %}

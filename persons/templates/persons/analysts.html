@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+{% block content %}
+Таблица измерителей
+<table class="table">
+  <tr>
+    <td>login</td>
+    <td>Имя </td>
+    <td>Редактирование</td>
+  </tr>
+{% for emp in emps %}
+<tr>
+  <td>{{emp.person.user.username}}</td>
+  <td>{{emp.person.user.last_name}}  {{emp.person..user.first_name}} </td>
+  <td><span class="glyphicon glyphicon-pencil"></span></td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

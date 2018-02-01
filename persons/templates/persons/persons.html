@@ -1,6 +1,13 @@
 {% extends "index.html" %}
 {% block content %}
+Таблица сотрудников
 <table class="table">
+  <tr>
+    <td>login</td>
+    <td>Имя</td>
+    <td>Должность</td> <td>Подразделение</td>
+    <td>Редактирование</td>
+  </tr>
 {% for emp in emps %}
 <tr>
   <td>{{emp.user.username}}</td>
