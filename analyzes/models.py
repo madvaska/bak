@@ -6,7 +6,7 @@ import datetime
 
 class Project(models.Model):
     # TODO: Define fields here
-    name = models.CharField(blank=True, max_length=100)
+    name = models.CharField(blank=True, max_length=100,unique=True)
     class Meta:
         verbose_name = 'Project'
         verbose_name_plural = 'Projects'
@@ -33,19 +33,19 @@ class AnalyzeType(models.Model):
 
 class Order(models.Model):
     # TODO: Define fields here
-    dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now)
-    code        = models.CharField(blank=True, max_length=100)
-    codeOfSample= models.CharField(blank=True, max_length=100)
+    dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now,verbose_name='Дата')
+    code        = models.CharField(blank=True, max_length=100,unique=True,verbose_name='Код заявки')
+    codeOfSample= models.CharField(blank=True, max_length=100,unique=True,verbose_name='Код образца')
     type        = models.ForeignKey(AnalyzeType)
     customer    = models.ForeignKey(Customer)
     project     = models.ForeignKey(Project)
     comment     = models.TextField()
     #флаг что по этому заказу сделан анализ и данные введены
-    executed    = models.BooleanField(default=True)
+    executed    = models.BooleanField(default=False, verbose_name='Анализ сделан и данные введены')
 
     class Meta:
-        verbose_name = 'Order'
-        verbose_name_plural = 'Orders'
+        verbose_name = 'Заявка'
+        verbose_name_plural = 'Заявки'
 
     def __unicode__(self):
         pass
@@ -55,7 +55,7 @@ class Order(models.Model):
 class Analyze(models.Model):
     # TODO: Define fields here
     dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now, verbose_name='Дата')
-    order       = models.ForeignKey(Order, verbose_name='Заявка')
+    order       = models.ForeignKey(Order, verbose_name='Заявка',unique=True)
     analyst     = models.ForeignKey(Analyst,related_name='analyst', verbose_name='Исполнитель')
     appointedBy = models.ForeignKey(Analyst,related_name='appointedBy', verbose_name='Назначен')
     comment     = models.TextField(verbose_name='Комментарий')
@@ -63,8 +63,8 @@ class Analyze(models.Model):
     verifyed    = models.BooleanField(default=False, verbose_name='Данные введены ии проверены')
 
     class Meta:
-        verbose_name = 'Analyze'
-        verbose_name_plural = 'Analyzes'
+        verbose_name = 'Анализ'
+        verbose_name_plural = 'Анализы'
 
     def __unicode__(self):
         pass
@@ -74,10 +74,10 @@ class Analyze(models.Model):
 
 class AnalyzeDataFormat(models.Model):
     # TODO: Define fields here
-    type = models.ForeignKey(AnalyzeType)
-    name = models.CharField(blank=True, max_length=100)
+    type = models.ForeignKey(AnalyzeType,verbose_name='Тип анализа')
+    name = models.CharField(blank=True, max_length=100, unique=True,verbose_name='Наименование формата')
     #флаг подтверждающий актуальность формата
-    enable = models.BooleanField(default=True)
+    enable = models.BooleanField(default=True,verbose_name='Активен')
 
     class Meta:
         verbose_name = 'AnalyzeDataFormat'
@@ -91,20 +91,22 @@ class AnalyzeDataFormat(models.Model):
 class DataFormatField(models.Model):
     # TODO: Define fields here
     listTypes = (
-    ('int', 'int'),
-    ('int', 'int'),
-    ('int', 'int'),
-    ('int', 'int'),
+    ('int', 'Число'),
+    ('text', 'Текст'),
+    ('img', 'Картинка'),
+    ('xls', 'Файл XLS'),
+    ('bin', 'Двоичный файл'),
     )
-    fieldName       = models.CharField(blank=True, max_length=100)
-    fieldType       = models.CharField(blank=True, max_length=100, choices = listTypes, default=int)
-    serialNumber    = models.IntegerField()
-    optional        = models.BooleanField()
+    fieldName       = models.CharField(blank=True, max_length=100,verbose_name='Имя поля')
+    fieldType       = models.CharField(blank=True, max_length=100, choices = listTypes,
+    default=int,verbose_name='Тип данных в поле')
+    serialNumber    = models.IntegerField(verbose_name='Код поля')
+    optional        = models.BooleanField(verbose_name='Обязательность заполнения')
 
     #дальнейшие поля для отображения на форме ввода и для отражения в виде таблицы результатов
-    fieldCaption    = models.CharField(blank=True, max_length=100)
-    fieldWidth      = models.IntegerField()
-    fieldWidthInTable      = models.IntegerField()
+    fieldCaption    = models.CharField(blank=True, max_length=100,verbose_name='Заголовок поля')
+    fieldWidth      = models.IntegerField(verbose_name='Ширина поля')
+    fieldWidthInTable      = models.IntegerField(verbose_name='Ширина поля в таблице')
 
     class Meta:
         verbose_name = 'DataFormatField'
@@ -115,16 +117,16 @@ class DataFormatField(models.Model):
 
 class DataValue(models.Model):
     # TODO: Define fields here
-    analyze = models.ForeignKey(Analyze)
-    dataFormatField = models.ForeignKey(DataFormatField)
-    dateTime = models.DateTimeField(blank=True, default=datetime.datetime.now)
+    analyze = models.ForeignKey(Analyze,verbose_name='Анализ')
+    dataFormatField = models.ForeignKey(DataFormatField,verbose_name='Шаблон ввода данных')
+    dateTime = models.DateTimeField(blank=True, default=datetime.datetime.now,verbose_name='Дата ввода')
 
     class Meta:
         abstract = True
 
 class dataIntValue(DataValue):
     # TODO: Define fields here
-    value   = models.DecimalField(max_digits=10,decimal_places=3)
+    value   = models.DecimalField(max_digits=10,decimal_places=3,verbose_name='Значение')
 
     class Meta:
         verbose_name = 'dataIntValue'
@@ -136,7 +138,7 @@ class dataIntValue(DataValue):
 
 class DataTextValue(DataValue):
     # TODO: Define fields here
-    value   = models.TextField()
+    value   = models.TextField(verbose_name='Значение')
 
     class Meta:
         verbose_name = 'dataTextValue'
@@ -147,7 +149,7 @@ class DataTextValue(DataValue):
 
 class DataImageValue(DataValue):
     # TODO: Define fields here
-    value   = models.ImageField()
+    value   = models.ImageField(verbose_name='Значение')
 
     class Meta:
         verbose_name = 'dataImageValue'

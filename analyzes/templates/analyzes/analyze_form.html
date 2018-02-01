@@ -4,6 +4,9 @@
   {% csrf_token %}
   {% for field  in form %}
   {% if field.name == 'order' %}
+  {% if field.errors %}
+  {{field.errors}}
+  {% endif %}
   {{field.label}}
   <select class="" name="order" id="id_order">
     <option value={{order.pk}}>{{order}}</option>

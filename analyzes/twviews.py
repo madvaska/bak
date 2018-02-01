@@ -5,6 +5,8 @@ from django.views.generic.edit import CreateView
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseForbidden
 
 class AddOrder(CreateView):
     model = Order
@@ -39,6 +41,8 @@ class AddAnalyze(CreateView):
             self.initial['analyst']=analyst
         else:
             print('not auth')
+            raise Exception('You are not auth.')
+            return super(AddAnalyze,self).get(request, *args, **kwargs)
         print(user)
 
         order = self.kwargs['order']
@@ -60,14 +64,14 @@ class AddAnalyze(CreateView):
         else:
             print('not auth post')
         print(user)
+
         #form.instance.order = self.initial['order']
         return(super(AddAnalyze,self).post(request,*args,**kwargs))
         pass
 
     def form_valid(self,form):
         print("test2")
-        print(user)
-        form.instance.order = self.initial['order']
+        #form.instance.order = self.initial['order']
         return super(AddAnalyze,self).form_valid(form)
 
     def get_context_data(self, **kwargs):
