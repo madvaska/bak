@@ -1,4 +1,27 @@
 {% extends "index.html" %}
 {% block content %}
-  {{form.as_p}}
+<form class=""  method="post">
+  {% csrf_token %}
+  {% for field  in form %}
+  {% if field.name == 'order' %}
+  {{field.label}}
+  <select class="" name="order" id="id_order">
+    <option value={{order.pk}}>{{order}}</option>
+  </select>
+  <br />
+{%else%}
+{% if field.name == 'analyst' %}
+{{field.label}}
+<select class="" name="analyst" id="id_analyst">
+  <option value={{analyst.pk}}>{{analyst}}</option>
+</select>
+<br />
+{% else %}
+{{field.label}}{{field}}
+<br />
+{% endif %}
+  {% endif %}
+  {% endfor %}
+  <input type="submit" name="" value="">
+</form>
 {% endblock %}
