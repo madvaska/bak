@@ -31,15 +31,34 @@ class AnalyzeType(models.Model):
         return(self.code+"  "+self.name)
         pass
 
+class OrdersCode(models.Model):
+    code        = models.CharField(max_length=20,unique=True,verbose_name='Код заявки')
+
+    def __str__(self):
+        return(code)
+
+    def __unicode__(self):
+        return u"orders_code"
+
+class SamplesCode(models.Model):
+    codeOfSample= models.CharField(max_length=20,unique=True,verbose_name='Код образца')
+
+    def __str__(self):
+        return(codeOfSample)
+
+    def __unicode__(self):
+        return u"orders_code"
+
+
 class Order(models.Model):
     # TODO: Define fields here
-    dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now,verbose_name='Дата')
-    code        = models.CharField(blank=True, max_length=100,unique=True,verbose_name='Код заявки')
-    codeOfSample= models.CharField(blank=True, max_length=100,unique=True,verbose_name='Код образца')
-    type        = models.ForeignKey(AnalyzeType)
-    customer    = models.ForeignKey(Customer)
-    project     = models.ForeignKey(Project)
-    comment     = models.TextField()
+    dateTime    = models.DateTimeField(default=datetime.datetime.now,verbose_name='Дата')
+    code        = models.CharField(max_length=20,unique=True,verbose_name='Код заявки')
+    codeOfSample= models.CharField(max_length=20,unique=True,verbose_name='Код образца')
+    type        = models.ForeignKey(AnalyzeType, verbose_name='Тип анализа')
+    customer    = models.ForeignKey(Customer, verbose_name='Заказчик')
+    project     = models.ForeignKey(Project, verbose_name='Проект')
+    comment     = models.TextField(blank=True, verbose_name='Комментарий')
     #флаг что по этому заказу сделан анализ и данные введены
     executed    = models.BooleanField(default=False, verbose_name='Анализ сделан и данные введены')
 
@@ -58,7 +77,7 @@ class Analyze(models.Model):
     order       = models.ForeignKey(Order, verbose_name='Заявка',unique=True)
     analyst     = models.ForeignKey(Analyst,related_name='analyst', verbose_name='Исполнитель')
     appointedBy = models.ForeignKey(Analyst,related_name='appointedBy', verbose_name='Назначен')
-    comment     = models.TextField(verbose_name='Комментарий')
+    comment     = models.TextField(blank=True,verbose_name='Комментарий')
     #этот флаг означает что измеритель ввел данные и проверил значение
     verifyed    = models.BooleanField(default=False, verbose_name='Данные введены ии проверены')
 

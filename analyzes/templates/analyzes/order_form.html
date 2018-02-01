@@ -1,4 +1,22 @@
 {% extends "index.html" %}
 {% block content %}
-  {{form.as_p}}
+<form class=""  method="post">
+  {% csrf_token %}
+  {% for field  in form %}
+  {% if field.name == 'customer' %}
+      {% if field.errors %}
+      {{field.errors}}
+      {% endif %}
+    {{field.label}}
+    <select class="" name="customer" id="id_customer">
+      <option value={{customer.pk}}>{{customer}}</option>
+    </select>
+    <br />
+  {% else %}
+      {{field.label}}{{field}}
+      <br />
+  {% endif %}
+  {% endfor %}
+  <input type="submit" name="" value="Добавить заявку">
+</form>
 {% endblock %}
