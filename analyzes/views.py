@@ -171,6 +171,7 @@ def  show_res_for_analyze(request, analyze_id, df):
             #формат в точности один. Проверяем активность. Если активен показываем
             df = dataFormats[0]
             if df.enable == False:
+
                 #ошибка нет активных форматов. Показать ошибку
                 pass
         else:
@@ -190,10 +191,28 @@ def  show_res_for_analyze(request, analyze_id, df):
         #Ошибка нет описания формата полей. Необходимо сначала настроить поля формата
         #Сообщаем об этом пользователю
         pass
+    #    listTypes = (
+    #    ('int', 'Число'),
+    #    ('text', 'Текст'),
+    #    ('img', 'Картинка'),
+    #    ('xls', 'Файл XLS'),
+    #    ('bin', 'Двоичный файл'),
+    #    )
     res = []
     for dff in dffs:
-        pass
-
+        if dff.fieldType == 'int':
+            res.append(dataIntValue.objects.filter(DataFormatField=dff).first())
+        elif dff.fieldType == 'text':
+            res.append(DataTextValue.objects.filter(DataFormatField=dff).first())
+        elif dff.fieldType == 'img':
+            res.append(DataImageValue.objects.filter(DataFormatField=dff).first())
+        elif dff.fieldType == 'xls':
+            res.append(DataTextXValue.objects.filter(DataFormatField=dff).first())
+        elif dff.fieldType == 'bin':
+            res.append(DataBinaryValue.objects.filter(DataFormatField=dff).first())
+        else:
+            #Тут какая то ошибка по видимому....
+            pass
 
     #если да, то регистрируем этот запрос (что пришел пользователь
     #и ему показали результат, если он есть)
@@ -201,6 +220,16 @@ def  show_res_for_analyze(request, analyze_id, df):
 
     #если форматы есть а результатов нет, то проверяем имеет ли пользователь
     #право внести результаты
+    if len(res) == 0:
+        #нужно вводить результаты (обязательность полей проверяем при вводе!)
+        #проверяем может ли пользователь вводить результаты
+        #точнее совпвдвет ли пользователь с пользователем в поле analyst analyze
+        #выводим форму для ввода
+        #нужно вводить недостающие (хотя может лучше обыграть обязательность поля....)
+        pass
+    else:
+        # достаточно просто показать результаты
+        pass
 
     #
     #
@@ -210,8 +239,3 @@ def  show_res_for_analyze(request, analyze_id, df):
     #
     #
     #
-
-#    url(r'^at/$', views.analyzeType, name='Типы анализов'),
-#    url(r'^at/add', AddAnalyzeType.as_view(), name='Добавить новый тип анализов'),
-#    url(r'^pr/$', views.projects, name='Проекты'),
-#    url(r'^pr/add', AddProject.as_view(), name='Добавить новый проект'),
