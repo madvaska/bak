@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+{% block left_menu %}
+      {{df.pk}}
+      <br/>
+      {{df.type}}
+      <br/>
+      {{df.name}}
+      <br/>
+      {{df.enable}}
+      <br/>
+{% endblock %}
+{% block content %}
+
+Таблица
+    <table class="table">
+    {% for elem in dffs %}
+    <tr>
+      <td>{{elem.pk}}</td>
+      <td>{{elem.dataFormat}}</td>
+      <td>{{elem.fieldName}}</td>
+      <td>{{elem.fieldType}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

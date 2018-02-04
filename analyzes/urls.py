@@ -32,4 +32,7 @@ urlpatterns = [
     url(r'^a/$', views.analyzes, name='Анализы'),
     url(r'^a/view/(?P<id>\d+)?$', views.analyze_details, name='analyze'),
     url(r'^a/add/(?P<order>\d+)?$', AddAnalyze.as_view(), name='add_analyze'),
+    url(r'^df/$', views.data_formats, name='dformats'),
+    url(r'^df/edit/(?P<df>\d+)?$', views.data_format_edit, name='dformatedit'),
+    url(r'^res/(?P<analyze_id>\d+)/(?P<df>\d+)$', views.show_res_for_analyze, name='viewres'),
 ]

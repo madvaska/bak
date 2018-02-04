@@ -1,0 +1,34 @@
+{% extends "index.html" %}
+{% block left_menu %}
+{{at}}
+<form class=""  method="post">
+  {% csrf_token %}
+  <select  name="atype">
+    {% for elem  in atypes %}
+      {% if elem.code == at %}
+      {{elem.pk}}
+        <option value={{elem.pk}} selected>{{elem.code}} {{elem.name}} </option>
+      {% else %}
+        <option value={{elem.pk}}>{{elem.code}} {{elem.name}} </option>
+      {% endif %}
+    {% endfor %}
+  </select>
+  <input type="submit" name="" value="Выбрать">
+</form>
+{% endblock %}
+{% block content %}
+
+Таблица
+    <table class="table">
+    {% for elem in dformats %}
+    <tr>
+      <td>{{elem.name}}</td>
+      <td>{{elem.atype}}</td>
+      <td><a href="/a/df/edit/{{elem.pk}}"> 
+        <span class="glyphicon glyphicon-pencil"></span>
+      </a>
+    </td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

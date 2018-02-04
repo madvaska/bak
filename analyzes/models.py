@@ -116,6 +116,7 @@ class DataFormatField(models.Model):
     ('xls', 'Файл XLS'),
     ('bin', 'Двоичный файл'),
     )
+    dataFormat = models.ForeignKey(AnalyzeDataFormat,verbose_name='Формат данных')
     fieldName       = models.CharField(blank=True, max_length=100,verbose_name='Имя поля')
     fieldType       = models.CharField(blank=True, max_length=100, choices = listTypes,
     default=int,verbose_name='Тип данных в поле')
@@ -133,6 +134,8 @@ class DataFormatField(models.Model):
 
     def __unicode__(self):
         pass
+    def __str__(self):
+        return(self.fieldType)    
 
 class DataValue(models.Model):
     # TODO: Define fields here
@@ -153,7 +156,6 @@ class dataIntValue(DataValue):
 
     def __unicode__(self):
         pass
-
 
 class DataTextValue(DataValue):
     # TODO: Define fields here

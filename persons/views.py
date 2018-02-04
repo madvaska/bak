@@ -4,7 +4,7 @@ from .models import Person, Customer, Analyst, Administrator
 # Create your views here.
 
 def persons(request):
-    emps = Person.objects.all()
+    emps = Person.objects.all().order_by('user__last_name')
     #print(emps)
     return render(request, 'persons/persons.html', {'emps':emps})
 
@@ -15,7 +15,7 @@ class AddPersons(CreateView):
     #print(emps)
     #return render(request, 'persons/persons.html', {'emps':emps})
 def customers(request):
-    emps = Customer.objects.all()
+    emps = Customer.objects.all().order_by('person__user__last_name')
     #print(emps)
     return render(request, 'persons/customers.html', {'emps':emps})
 
@@ -25,7 +25,7 @@ class AddCustomer(CreateView):
     success_url="/persons/c/"
 
 def analysts(request):
-    emps = Analyst.objects.all()
+    emps = Analyst.objects.all().order_by('person__user__last_name')
     #print(emps)
     return render(request, 'persons/analysts.html', {'emps':emps})
 

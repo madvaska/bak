@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze
+from .models import AnalyzeDataFormat, DataFormatField
 from persons.models import Customer,Person
 from django.views.generic.edit import CreateView
 from django.core.paginator import Paginator
@@ -116,8 +117,99 @@ def analyze_details(request,id):
     print(analyze)
     return render(request, 'analyzes/analyze_details.html', {'analyze':analyze})
 
+#===============================================================================
+#
+#
+#===============================================================================
+def data_formats(request):
+    try:
+        atype = request.POST['atype']
+        print(atype)
+        #dformats = DataFormat.objects.all().filter(atype__pk=atype)
+        dformats = AnalyzeDataFormat.objects.all().filter(type__pk=atype)
+        print(dformats)
+        atype = AnalyzeType.objects.get(pk=atype)
+        at = atype.code
+    except Exception:
+        atype ="0"
+        at = 'NOR'
+        dformats = None
+    #print(atype)
+
+    atypes = AnalyzeType.objects.all().order_by('code')
+    return render(request, 'analyzes/data_formats.html', {'dformats':dformats,'atypes':atypes, 'at':at})
+
+#===============================================================================
+#
+#
+#===============================================================================
+def data_format_edit(request, df):
+    if df is None:
+        pass
+    dataFormat = AnalyzeDataFormat.objects.get(pk=df)
+    dataFormatFields = DataFormatField.objects.filter(dataFormat__pk=df)
+    print(dataFormatFields[0])
+    return render(request, 'analyzes/data_format_edit.html', {'dffs':dataFormatFields,'df':dataFormat})
+
+#===============================================================================
+#
+#
+#===============================================================================
+def  show_res_for_analyze(request, analyze_id, df):
+    #проверка можно ли пользоватедю смотреть результаты этого анализа
+
+    #проверяем есть ли формат для анализа,  если есть, то есть ли результаты
+    analyze = Analyze.objects.get(pk=analyze_id)
+    id_atype = analyze.order.type.pk
+    dataFormats = AnalyzeDataFormat.objects.filter(type__pk=id_atype)
+    dfcount = dataFormats.count()
+    if dfcount < 1 :
+        #нет формата для этого типа анализов. сформировать ошибку. Показать пользователю
+        pass
+    else:
+        if (dfcount == 1):
+            #формат в точности один. Проверяем активность. Если активен показываем
+            df = dataFormats[0]
+            if df.enable == False:
+                #ошибка нет активных форматов. Показать ошибку
+                pass
+        else:
+            counter_enable = 0
+            for df1 in dataFormats:
+                if df1.enable:
+                    counter_enable = counter_enable + 1
+                    df = df1
+            if counter_enable != 1 :
+                #Ошибка либо нет активных форматов либо их слишком много. Показываем
+                pass
+    # у нас есть анализ и формат данных. Получаем для этого формата данных поля формата данных
+    # если полей формата нет, то это ошибка сообщаем пользователю об этом
+    dffs = DataFormatField.objects.filter(dataFormat=df)
+    dffs_counter = dffs.count()
+    if dffs_counter < 1:
+        #Ошибка нет описания формата полей. Необходимо сначала настроить поля формата
+        #Сообщаем об этом пользователю
+        pass
+    res = []
+    for dff in dffs:
+        pass
 
 
+    #если да, то регистрируем этот запрос (что пришел пользователь
+    #и ему показали результат, если он есть)
+
+
+    #если форматы есть а результатов нет, то проверяем имеет ли пользователь
+    #право внести результаты
+
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
 
 #    url(r'^at/$', views.analyzeType, name='Типы анализов'),
 #    url(r'^at/add', AddAnalyzeType.as_view(), name='Добавить новый тип анализов'),
