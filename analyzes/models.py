@@ -35,7 +35,7 @@ class OrdersCode(models.Model):
     code        = models.CharField(max_length=20,unique=True,verbose_name='Код заявки')
 
     def __str__(self):
-        return(code)
+        return(self.code)
 
     def __unicode__(self):
         return u"orders_code"
@@ -44,7 +44,7 @@ class SamplesCode(models.Model):
     codeOfSample= models.CharField(max_length=20,unique=True,verbose_name='Код образца')
 
     def __str__(self):
-        return(codeOfSample)
+        return(self.codeOfSample)
 
     def __unicode__(self):
         return u"orders_code"
@@ -135,7 +135,7 @@ class DataFormatField(models.Model):
     def __unicode__(self):
         pass
     def __str__(self):
-        return(self.fieldType)    
+        return(self.fieldType)
 
 class DataValue(models.Model):
     # TODO: Define fields here

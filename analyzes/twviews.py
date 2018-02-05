@@ -22,13 +22,20 @@ class AddOrder(CreateView):
         else:
             raise Exception('You are not auth.')
         now = datetime.datetime.now()
+        if now.month <10:
+            str1 = str(now.year)+"0"+str(now.month)
+        else:
+            str1 = str(now.year)+str(now.month)
         try:
             ocode = OrdersCode.objects.get(pk=1)
             code1 = ocode.code
             ocode.code = str(int(code1)+1)
             ocode.save()
         except Exception:
-            ocode = OrdersCode.objects.create(pk=1,code=""+str(now.year)+str(now.month)+"0001")
+            ocode = OrdersCode.objects.create(pk=1,code=str1 + "0001")
+        if ocode.code < str1 + "0001":
+            ocode.code = str1 + "0001"
+            ocode.save()
         self.initial['code'] =  ocode.code
         try:
             scode = SamplesCode.objects.get(pk=1)
@@ -36,12 +43,16 @@ class AddOrder(CreateView):
             scode.codeOfSample=str(int(code1)+1)
             scode.save()
         except Exception:
-            scode = SamplesCode.objects.create(pk=1,codeOfSample=""+str(now.year)+str(now.month)+"0001")
+            scode = SamplesCode.objects.create(pk=1,codeOfSample=str1+"0001")
+        if scode.codeOfSample < str1 + "0001":
+            scode.codeOfSample = str1 + + "0001"
+            scode.save()
         self.initial['codeOfSample'] =  scode.codeOfSample
         return super(AddOrder,self).get(request, *args, **kwargs)
 
     def post(self,request,*args,**kwargs):
-        print("test1")
+        #print("test1")
+        #print(request.POST)
         user = request.user
         if user.is_authenticated:
             print('auth post')
@@ -70,6 +81,9 @@ class AddOrder(CreateView):
         except Exception:
             scode = SamplesCode.objects.create(pk=1,codeOfSample=""+str(now.year)+str1+"0001")
         #context['codeOfSample'] =  scode.codeOfSample
+        #print(context['form'].fields['code'].disabled)
+        #context['form'].fields['code'].disabled = True
+        #print(context['form'].fields['code'].disabled)
         return context
 
 

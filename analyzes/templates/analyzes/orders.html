@@ -1,7 +1,15 @@
 {% extends "index.html" %}
 {% block left_menu %}
-<form class="" action="" method="post">
+<p>
+  <form class="filter" action="/a/o/add/" method="get">
+    <input type="submit" name="" value="Новая заявка">
+  </form>
+</p>
+
+<form class="filter" action="" method="post" >
   {% csrf_token %}
+  <fieldset>
+  <legend>Фильтры</legend>
   <select class="select1" name="type">
     <option value="0">Типы анализа(Все)</option>
     {% for elem in types %}
@@ -35,12 +43,13 @@
     {% endfor %}
   </select>
   <br />
-  <label>
+  <label class="form_group">
     <input type="checkbox" name="executed" value="on"> Выполнен
     </label>
   <br />
-  <input type="submit" name="but1" value="Отобрать">
-  <input type="submit" name="but2" value="Отключить отбор">
+  <input class="mbutton" type="submit" name="but1" value="Отобрать">
+  <input class="mbutton" type="submit" name="but2" value="Отключить отбор">
+</fieldset>
 </form>
 {% endblock %}
 

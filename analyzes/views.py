@@ -17,18 +17,23 @@ def orders(request, page):
         print('неавторизованный')
         return render(request, 'analyzes/orders.html')
 
-    types = AnalyzeType.objects.all()
-    projects = Project.objects.all()
-    customers = Customer.objects.all()
+    #
+    #здесь нужно добавить проверку прав пользователя
+    #
+    #
+
+    types = AnalyzeType.objects.all().order_by('code')
+    projects = Project.objects.all().order_by('name')
+    customers = Customer.objects.all().order_by('person__user__last_name')
     print(request.POST)
     typeselected = ""
     customerselected = ''
     projectselected = ''
     if request.POST.get('but1', default=None) is None:
-        orders = Order.objects.all()
+        orders = Order.objects.all().order_by('-dateTime')
     else:
         str1 = ''
-        orders = Order.objects.all()
+        orders = Order.objects.all().order_by('-dateTime')
         typeselected = request.POST.get('type', default=None)
         if typeselected is None:
             pass
@@ -63,7 +68,7 @@ def orders(request, page):
     if projectselected is None:
         projectselected = ''
     print("dd="+customerselected)
-    orders = Paginator(orders,1)
+    orders = Paginator(orders,5)
     if page is None:
         page_num = 1
     else:
