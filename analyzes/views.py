@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze
 from .models import AnalyzeDataFormat, DataFormatField
-from persons.models import Customer,Person
+from persons.models import Customer,Person,Analyst,Administrator
 from django.views.generic.edit import CreateView
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
@@ -17,46 +17,95 @@ def orders(request, page):
         print('неавторизованный')
         return render(request, 'analyzes/orders.html')
 
-    #
+    user = request.user
+    print(user)
+    #TODO
     #здесь нужно добавить проверку прав пользователя
     #
     #
+    rules={'is_customer':False, 'is_analyst':False,
+    'is_super_analyst':False, 'is_admin':False}
+
+    try:
+        customer = Customer.objects.get(person__user = user)
+        rules['is_customer'] = True
+    except :
+        pass
+
+    try:
+        analyst = Analyst.objects.get(person__user__pk = user.pk)
+        rules['is_analyst'] = True
+        if analyst.isHead :
+            rules['is_super_analyst'] = True
+    except:
+        pass
+
+    try:
+        admin = Administrator.objects.get(person__user = user)
+        rules['is_admin'] = True
+    except :
+        pass
+
+    if (rules['is_customer'] or rules['is_analyst'] or rules['is_super_analyst'] or rules['is_admin']):
+        pass
+    else:
+        #TODO Нужно послать на хуй
+        raise Exception('Пошел на фиг.')
+        return render(request, 'analyzes/orders.html' )
 
     types = AnalyzeType.objects.all().order_by('code')
     projects = Project.objects.all().order_by('name')
-    customers = Customer.objects.all().order_by('person__user__last_name')
-    print(request.POST)
+    print('trace1')
+    if (rules['is_admin'] or rules['is_super_analyst']):
+        print('trace2.1')
+        customers = Customer.objects.all().order_by('person__user__last_name')
+    elif (rules['is_customer']):
+        print('trace2.2')
+        customers = Customer.objects.filter(person__user = user).order_by('person__user__last_name')
+    else:
+        print('trace2.3')
+        customers = Customer.objects.filter(person__user = user).order_by('person__user__last_name')
+
     typeselected = ""
     customerselected = ''
     projectselected = ''
+
     if request.POST.get('but1', default=None) is None:
-        orders = Order.objects.all().order_by('-dateTime')
+        if (rules['is_admin'] or rules['is_super_analyst']):
+            orders = Order.objects.all().order_by('-dateTime')
+        elif (rules['is_customer']):
+            orders = Order.objects.filter(customer__person__user = user).order_by('-dateTime')
     else:
         str1 = ''
-        orders = Order.objects.all().order_by('-dateTime')
+        if (rules['is_admin'] or rules['is_super_analyst']):
+            orders = Order.objects.all().order_by('-dateTime')
+        elif (rules['is_customer']):
+            orders = Order.objects.filter(customer__person__user = user).order_by('-dateTime')
+
         typeselected = request.POST.get('type', default=None)
         if typeselected is None:
             pass
         else:
-            if typeselected != '0':
-                type1 = AnalyzeType.objects.get(name__exact=typeselected)
-                orders = orders.filter(type__exact=type1)
+            typeselected = int(typeselected)
+            if typeselected != 0:
+                print('typeselected')
+                print(typeselected)
+                orders = orders.filter(type__pk=typeselected)
         customerselected = request.POST.get('customer', default=None)
         if customerselected is None:
             pass
         else:
-            if customerselected != '0':
-                person1 = Person.objects.get(lastName__exact=customerselected)
-                customer1 = Customer.objects.get(person__exact=person1)
-                orders = orders.filter(customer__exact=customer1)
+            customerselected = int(customerselected)
+            if customerselected != 0:
+                orders = orders.filter(customer__pk=customerselected)
 
         projectselected = request.POST.get('project', default=None)
         if projectselected is None:
             pass
         else:
-            if projectselected != '0':
-                project1 = Project.objects.get(name__exact=projectselected)
-                orders = orders.filter(project__exact=project1)
+            projectselected = int(projectselected)
+            if projectselected != 0:
+                orders = orders.filter(project__pk=projectselected)
             pass
         if request.POST.get('executed', default=None) is None:
             pass
@@ -67,8 +116,8 @@ def orders(request, page):
         customerselected = ''
     if projectselected is None:
         projectselected = ''
-    print("dd="+customerselected)
-    orders = Paginator(orders,5)
+    #print("dd="+customerselected)
+    orders = Paginator(orders,30)
     if page is None:
         page_num = 1
     else:

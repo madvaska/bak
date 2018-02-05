@@ -51,8 +51,9 @@ class AddOrder(CreateView):
         return super(AddOrder,self).get(request, *args, **kwargs)
 
     def post(self,request,*args,**kwargs):
-        #print("test1")
-        #print(request.POST)
+        print("test1")
+        print(request.POST)
+        print(self)
         user = request.user
         if user.is_authenticated:
             print('auth post')
@@ -84,6 +85,7 @@ class AddOrder(CreateView):
         #print(context['form'].fields['code'].disabled)
         #context['form'].fields['code'].disabled = True
         #print(context['form'].fields['code'].disabled)
+
         return context
 
 
