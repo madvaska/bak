@@ -69,6 +69,8 @@ class Customer(models.Model):
 
     def __unicode__(self):
         pass
+    def __str__(self):
+        return self.person.user.username    
 
 class Analyst(models.Model):
     # TODO: Define fields here
@@ -88,6 +90,8 @@ class Analyst(models.Model):
 
     def __unicode__(self):
         pass
+    def __str__(self):
+        return self.person.user.username
 
 class Administrator(models.Model):
     # TODO: Define fields here
@@ -105,3 +109,5 @@ class Administrator(models.Model):
 
     def __unicode__(self):
         pass
+    def __str__(self):
+        return self.person.user.username
