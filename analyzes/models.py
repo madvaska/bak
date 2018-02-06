@@ -1,5 +1,5 @@
 from django.db import models
-from persons.models import Customer,Analyst
+from persons.models import Customer,Analyst, Person, Administrator
 import datetime
 
 # Create your models here.
@@ -70,6 +70,29 @@ class Order(models.Model):
         pass
     def __str__(self):
         return(self.code)
+
+class SetAnalyst(models.Model):
+    order = models.ForeignKey(Order, unique=True)
+    Analyst = models.ForeignKey(Analyst)
+    assignBy = models.ForeignKey(Person)
+    class Meta:
+        verbose_name = 'Назначение измерителя'
+        verbose_name_plural = 'Назначения измерителя'
+    def __unicode__(self):
+        return uSetAnalyst
+    def __str__(self):
+        return(self.order.code)
+
+class DeliverySample(models.Model):
+    order = models.ForeignKey(Order, unique = True)
+    success = models.BooleanField(default = False)
+    class Meta:
+        verbose_name = 'Доставка образца'
+        verbose_name_plural = 'Доставки образцов'
+    def __unicode__(self):
+        return uDeliverySample
+    def __str__(self):
+        return(self.order.codeOfSample)
 
 class Analyze(models.Model):
     # TODO: Define fields here
