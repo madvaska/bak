@@ -126,6 +126,21 @@ def orders(request, page):
         orders = orders.page(page_num)
     except EmptyPage:
         orders = orders.page(1)
+    for elem in orders:
+        try:
+            analyze = Analyze.objects.get(order=elem)
+            if elem.executed:
+                pass
+            else:
+                elem.executed = True
+                elem.save()
+        except :
+            analyze=None
+            if elem.executed:
+                elem.executed = False
+                elem.save()
+
+
     print(orders.paginator.num_pages)
     return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,
     'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected})
@@ -140,11 +155,23 @@ def order_details(request,id):
         return redirect(reverse('orders',kwargs={'page':2}))
         pass
         #raise
-    if elem.executed:
+
+    try:
         analyze = Analyze.objects.get(order=elem)
-        print(analyze.pk)
-    else:
+        if elem.executed:
+            pass
+        else:
+            elem.executed = True
+            elem.save()
+    except :
         analyze=None
+        if elem.executed:
+            elem.executed = False
+            elem.save()
+        else:
+            pass
+    else:
+        pass
     return render(request, 'analyzes/order_details.html', {'elem':elem, 'analyze':analyze})
 
 def analyzeTypes(request):

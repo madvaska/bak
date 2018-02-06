@@ -7,7 +7,11 @@
 
 Таблица
     <table class="table">
-    <tr>
+    {% if elem.executed %}
+      <tr class="gree">
+    {% else %}
+      <tr>
+    {% endif %}
       <td>{{elem.dateTime}}</td>
       <td>{{elem.code}}  {{elems.codeOfSample}}</td>
       <td> {{elem.type}} </td>
@@ -16,7 +20,7 @@
       <td>{{elem.comment}}</td>
       <td>
         {% if elem.executed %}
-        <a href={% url "analyze" %}{{analyze.id}}>
+        <a href="#">
           <span class="glyphicon glyphicon-ok-circle"></span>
         </a>
         {% else %}

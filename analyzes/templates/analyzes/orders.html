@@ -44,7 +44,7 @@
   </select>
   <br />
   <label class="form_group">
-    <input type="checkbox" name="executed" value="on"> Выполнен
+    <input  type="checkbox" name="executed" value="on" hidden> <br/>
     </label>
   <br />
   <input class="mbutton" type="submit" name="but1" value="Отобрать">
@@ -58,7 +58,7 @@
 
 <h4>Таблица заказов</h4>
     <table class="table">
-      <tr>
+      <tr >
         <td>Дата</td>
         <td>Код/Код образца</td>
         <td>Тип </td>
@@ -69,7 +69,11 @@
         <td>Просмотр</td>
       </tr>
     {% for order in orders %}
+    {% if order.executed %}
+    <tr class="gree">
+    {% else %}
     <tr>
+    {% endif %}
       <td>{{order.dateTime}}</td>
       <td>{{order.code}}  {{orders.codeOfSample}}</td>
       <td> {{order.type}} </td>
@@ -82,7 +86,7 @@
           <span class="glyphicon glyphicon-ok-circle"></span>
         </a>
         {% else %}
-        <a href="#">
+        <a href="/a/a/add/{{order.code}}">
           <span class="glyphicon glyphicon-plus"></span>
         </a>
         {% endif %}
