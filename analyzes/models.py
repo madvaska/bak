@@ -16,13 +16,25 @@ class Project(models.Model):
     def __str__(self):
         return(self.name)
 
+class GroupAnalyzes(models.Model):
+    name = models.CharField(unique=True,max_length=100, verbose_name='Наименование')
+
+    class Meta:
+        verbose_name = 'Группа анализов'
+        verbose_name_plural = 'Группы анализов'
+
+    def __unicode__(self):
+        return u"GroupAnalyzes"
+
+
 class AnalyzeType(models.Model):
     # TODO: Define fields here
     code = models.CharField(unique=True,max_length=10, verbose_name='Код')
     name = models.CharField(unique=True,max_length=400, verbose_name='Наименование')
+    group = models.ForeignKey(GroupAnalyzes, blank=True)
     class Meta:
-        verbose_name = 'AnalyzeType'
-        verbose_name_plural = 'AnalyzeTypes'
+        verbose_name = 'Вид анализов'
+        verbose_name_plural = 'Виды анализов'
 
     def __unicode__(self):
         return(self.name)
@@ -49,12 +61,26 @@ class SamplesCode(models.Model):
     def __unicode__(self):
         return u"orders_code"
 
+class Sample(models.Model):
+    dateTime = models.DateField(default=datetime.datetime.now,verbose_name='Дата')
+    code = models.CharField(max_length=20,unique=True,verbose_name='Код образца')
+    status = models.BooleanField(default=False, verbose_name = 'Образец получен лабораторией')
+    comment = models.TextField( blank = True, verbose_name='Описание образца' )
+
+    class Meta:
+        verbose_name = 'Опытный образец'
+        verbose_name_plural = 'Опытные образцы'
+    def __unicode__(self):
+        return u"Sample"
+    def __str__(self):
+        return(self.code + " : " +  str(self.dateTime))
 
 class Order(models.Model):
     # TODO: Define fields here
     dateTime    = models.DateTimeField(default=datetime.datetime.now,verbose_name='Дата')
     code        = models.CharField(max_length=20,unique=True,verbose_name='Код заявки')
-    codeOfSample= models.CharField(max_length=20,unique=True,verbose_name='Код образца')
+    #codeOfSample= models.CharField(max_length=20,unique=True,verbose_name='Код образца')
+    codeOfSample= models.ForeignKey(Sample, default = None, blank =True, verbose_name='Код образца')
     type        = models.ForeignKey(AnalyzeType, verbose_name='Тип анализа')
     customer    = models.ForeignKey(Customer, verbose_name='Заказчик')
     project     = models.ForeignKey(Project, verbose_name='Проект')
@@ -97,7 +123,7 @@ class DeliverySample(models.Model):
 class Analyze(models.Model):
     # TODO: Define fields here
     dateTime    = models.DateTimeField(blank=True, default=datetime.datetime.now, verbose_name='Дата')
-    order       = models.ForeignKey(Order, verbose_name='Заявка',unique=True)
+    order       = models.OneToOneField(Order, verbose_name='Заявка')
     analyst     = models.ForeignKey(Analyst,related_name='analyst', verbose_name='Исполнитель')
     appointedBy = models.ForeignKey(Analyst,related_name='appointedBy', verbose_name='Назначен')
     comment     = models.TextField(blank=True,verbose_name='Комментарий')

@@ -320,3 +320,10 @@ def  show_res_for_analyze(request, analyze_id, df):
     #
     #
     #
+#===============================================================================
+#
+#
+#===============================================================================
+def sample_details(request, page):
+    
+    return render(request, 'analyzes/samples.html', {'page':page})

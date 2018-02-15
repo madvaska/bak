@@ -19,6 +19,8 @@ from persons.views import AddPersons
 from django.views.generic import CreateView
 #from django.contrib import admin
 from analyzes.twviews import AddAnalyze, AddProject, AddAnalyzeType, AddOrder
+from analyzes.twviews import AddSample
+
 
 urlpatterns = [
     #url(r'^$', views.persons, name='сотрудники'),
@@ -35,4 +37,6 @@ urlpatterns = [
     url(r'^df/$', views.data_formats, name='dformats'),
     url(r'^df/edit/(?P<df>\d+)?$', views.data_format_edit, name='dformatedit'),
     url(r'^res/(?P<analyze_id>\d+)/(?P<df>\d+)$', views.show_res_for_analyze, name='viewres'),
+    url(r'^s/(?P<page>\d+)?$', views.sample_details, name='samples'),
+    url(r'^s/add', AddSample.as_view(), name='add_sample'),
 ]

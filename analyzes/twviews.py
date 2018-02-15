@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Order, Project, AnalyzeType, Analyze, OrdersCode, SamplesCode
+from .models import Order, Project, AnalyzeType, Analyze, OrdersCode, SamplesCode,Sample
 from persons.models import Customer,Person, Analyst
 from django.views.generic.edit import CreateView
 from django.core.paginator import Paginator
@@ -176,3 +176,10 @@ class AddAnalyze(CreateView):
 #    url(r'^at/add', AddAnalyzeType.as_view(), name='Добавить новый тип анализов'),
 #    url(r'^pr/$', views.projects, name='Проекты'),
 #    url(r'^pr/add', AddProject.as_view(), name='Добавить новый проект'),
+
+
+class AddSample(CreateView):
+    model = Sample
+    fields = ['dateTime','code','status','comment']
+    exclude =['order']
+    success_url = "/a/o"

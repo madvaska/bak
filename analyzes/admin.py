@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Order,Project,AnalyzeType,Analyze,AnalyzeDataFormat,DataFormatField
 from .models import dataIntValue,DataTextValue,DataImageValue,DataXLSValue,DataBinaryValue
-from .models import OrdersCode, SamplesCode
+from .models import OrdersCode, SamplesCode,Sample
 # Register your models here.
 admin.site.register(Order)
 admin.site.register(Project)
@@ -15,4 +15,7 @@ admin.site.register(DataImageValue)
 admin.site.register(DataXLSValue)
 admin.site.register(DataBinaryValue)
 admin.site.register(OrdersCode)
+
 admin.site.register(SamplesCode)
+
+admin.site.register(Sample)
