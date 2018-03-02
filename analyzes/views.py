@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze
 from .models import AnalyzeDataFormat, DataFormatField
+from .models import OrdersCode
 from .models import Sample
-
 from persons.models import Customer,Person,Analyst,Administrator
 from django.views.generic.edit import CreateView
 from django.core.paginator import Paginator
@@ -11,6 +11,28 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
+import datetime
+
+
+def getNewCodeOrder():
+    now = datetime.datetime.now()
+    if now.month <10:
+        str1 = str(now.year)+"0"+str(now.month)
+    else:
+        str1 = str(now.year)+str(now.month)
+    try:
+        ocode = OrdersCode.objects.get(pk=1)
+        code1 = ocode.code
+        ocode.code = str(int(code1)+1)
+        ocode.save()
+    except Exception:
+        ocode = OrdersCode.objects.create(pk=1,code=str1 + "0001")
+    if ocode.code < str1 + "0001":
+        ocode.code = str1 + "0001"
+        ocode.save()
+
+    return(ocode.code)
+
 
 # Create your views here.
 def orders(request, page):
@@ -362,15 +384,46 @@ def list_types(request, samplepk):
 
      # TODO: Если пользователь заказчик
     user = request.user
-    samples = Sample.objects.all().filter(customer__person__user = user)
-    i=1
-    for sample in samples:
-        atype=[]
-        orders = Order.objects.filter(codeOfSample = sample)
-        for order in orders:
-            atype.append(order.type.code)
-        sample.atype = atype
-        print(sample.atype)
+    sample = Sample.objects.get(pk=samplepk)
+    #получаем все типы анализов
     atypes = AnalyzeType.objects.all()
-
-    return render(request, 'analyzes/samples.html', {})
+    atype = request.POST.getlist('atype',default=None)
+    projectpk = request.POST.get('project',default=None)
+    if projectpk is None:
+        project = None
+    else:
+        project =  Project.objects.get(pk=projectpk)
+    print("project = "+str(project))
+    projects = Project.objects.all()
+    #print(atype)
+    #получаем все заказы для этого образца
+    orders = Order.objects.filter(codeOfSample=sample)
+    yettypes = []
+    for order in orders:
+        yettypes.append(order.type.pk)
+    for at in atype:
+        value = int(at)
+        if value in yettypes:
+            print('Уже есть '+str(value))
+            continue
+        #dateTime    = models.DateTimeField(default=datetime.datetime.now,verbose_name='Дата')
+        #code        = models.CharField(max_length=20,unique=True,verbose_name='Код заявки')
+        #codeOfSample= models.ForeignKey(Sample, default = None, blank =True, verbose_name='Код образца')
+        #type        = models.ForeignKey(AnalyzeType, verbose_name='Тип анализа')
+        #customer    = models.ForeignKey(Customer, verbose_name='Заказчик')
+        #project     = models.ForeignKey(Project, verbose_name='Проект')
+        #comment     = models.TextField(blank=True, verbose_name='Комментарий')
+        #флаг что по этому заказу сделан анализ и данные введены
+        #executed    = models.BooleanField(default=False, verbose_name='Анализ сделан и данные введены')
+        #создать новый заказ
+        Order.objects.create(
+        code = getNewCodeOrder(),
+        codeOfSample=sample,
+        type=AnalyzeType.objects.get(pk=value),
+        customer=Customer.objects.get(person__user=user),
+        project=project,
+        executed=False
+        )
+    #добавить новый заказ к заказам
+    orders = Order.objects.filter(codeOfSample=sample)
+    return render(request, 'analyzes/lt.html', {'sample':sample,'atypes':atypes,'orders':orders,'projects':projects})
