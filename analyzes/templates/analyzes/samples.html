@@ -1,7 +1,32 @@
 {% extends "index.html" %}
 {% block left_menu %}
+<!--
+<div width = 90 >
+  <form  action="" method="post">
+    <select multiple  name="types" style="width: 90%">
+      <option disabled value=0>Виды анализов</option>
+      {% for type in atypes %}
+        <option value={{type.id}}>{{type}}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" name="" value="Выбрать">
+  </form>
+</div>
+-->
 {% endblock %}
 
 {% block content %}
 <h4>Таблица образцов</h4>
+<table>
+  {% for sample in samples %}
+  <tr>
+    <td>{{sample}}</td>
+    <td>
+      {% for ats in sample.atype  %}
+        {{ats}},
+      {% endfor %}
+    <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
+  {% endfor %}
+
+</table>
 {% endblock %}

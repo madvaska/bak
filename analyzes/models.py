@@ -63,6 +63,7 @@ class SamplesCode(models.Model):
 
 class Sample(models.Model):
     dateTime = models.DateField(default=datetime.datetime.now,verbose_name='Дата')
+    customer    = models.ForeignKey(Customer, verbose_name='Заказчик')
     code = models.CharField(max_length=20,unique=True,verbose_name='Код образца')
     status = models.BooleanField(default=False, verbose_name = 'Образец получен лабораторией')
     comment = models.TextField( blank = True, verbose_name='Описание образца' )
@@ -70,10 +71,12 @@ class Sample(models.Model):
     class Meta:
         verbose_name = 'Опытный образец'
         verbose_name_plural = 'Опытные образцы'
+
     def __unicode__(self):
         return u"Sample"
+
     def __str__(self):
-        return(self.code + " : " +  str(self.dateTime))
+        return(self.code + " от " +  str(self.dateTime))
 
 class Order(models.Model):
     # TODO: Define fields here
@@ -97,8 +100,9 @@ class Order(models.Model):
     def __str__(self):
         return(self.code)
 
+
 class SetAnalyst(models.Model):
-    order = models.ForeignKey(Order, unique=True)
+    order = models.OneToOneField(Order)
     Analyst = models.ForeignKey(Analyst)
     assignBy = models.ForeignKey(Person)
     class Meta:
@@ -110,7 +114,7 @@ class SetAnalyst(models.Model):
         return(self.order.code)
 
 class DeliverySample(models.Model):
-    order = models.ForeignKey(Order, unique = True)
+    order = models.OneToOneField(Order)
     success = models.BooleanField(default = False)
     class Meta:
         verbose_name = 'Доставка образца'

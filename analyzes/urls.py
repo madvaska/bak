@@ -38,5 +38,6 @@ urlpatterns = [
     url(r'^df/edit/(?P<df>\d+)?$', views.data_format_edit, name='dformatedit'),
     url(r'^res/(?P<analyze_id>\d+)/(?P<df>\d+)$', views.show_res_for_analyze, name='viewres'),
     url(r'^s/(?P<page>\d+)?$', views.sample_details, name='samples'),
+    url(r'^s/at/(?P<samplepk>\d+)?$', views.list_types, name='list_types'),
     url(r'^s/add', AddSample.as_view(), name='add_sample'),
 ]

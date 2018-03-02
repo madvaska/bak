@@ -37,17 +37,17 @@ class AddOrder(CreateView):
             ocode.code = str1 + "0001"
             ocode.save()
         self.initial['code'] =  ocode.code
-        try:
-            scode = SamplesCode.objects.get(pk=1)
-            code1 = scode.codeOfSample
-            scode.codeOfSample=str(int(code1)+1)
-            scode.save()
-        except Exception:
-            scode = SamplesCode.objects.create(pk=1,codeOfSample=str1+"0001")
-        if scode.codeOfSample < str1 + "0001":
-            scode.codeOfSample = str1 + + "0001"
-            scode.save()
-        self.initial['codeOfSample'] =  scode.codeOfSample
+        #try:
+        #    scode = SamplesCode.objects.get(pk=1)
+        #    code1 = scode.codeOfSample
+        #    scode.codeOfSample=str(int(code1)+1)
+        #    scode.save()
+        #except Exception:
+        #    scode = SamplesCode.objects.create(pk=1,codeOfSample=str1+"0001")
+        #if scode.codeOfSample < str1 + "0001":
+        #    scode.codeOfSample = str1 + + "0001"
+        #    scode.save()
+        #self.initial['codeOfSample'] =  scode.codeOfSample
         return super(AddOrder,self).get(request, *args, **kwargs)
 
     def post(self,request,*args,**kwargs):
@@ -180,6 +180,12 @@ class AddAnalyze(CreateView):
 
 class AddSample(CreateView):
     model = Sample
-    fields = ['dateTime','code','status','comment']
-    exclude =['order']
+    #    dateTime = models.DateField(default=datetime.datetime.now,verbose_name='Дата')
+    #    customer    = models.ForeignKey(Customer, verbose_name='Заказчик')
+    #    code = models.CharField(max_length=20,unique=True,verbose_name='Код образца')
+    #    status = models.BooleanField(default=False, verbose_name = 'Образец получен лабораторией')
+    #    comment = models.TextField( blank = True, verbose_name='Описание образца' )
+
+    fields = ['dateTime','customer','code','status','comment']
+    #exclude =['order']
     success_url = "/a/o"

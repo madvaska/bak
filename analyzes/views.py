@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze
 from .models import AnalyzeDataFormat, DataFormatField
+from .models import Sample
+
 from persons.models import Customer,Person,Analyst,Administrator
 from django.views.generic.edit import CreateView
 from django.core.paginator import Paginator
@@ -325,5 +327,50 @@ def  show_res_for_analyze(request, analyze_id, df):
 #
 #===============================================================================
 def sample_details(request, page):
-    
-    return render(request, 'analyzes/samples.html', {'page':page})
+    if page is None:
+        page = 1
+    # TODO: если пользователь не авторизован или пользователь не заказчик или не
+    # не СуперАналитик
+    # не Аналитик тогда нефиг его сюда пускать
+
+     # TODO: Если пользователь заказчик
+    user = request.user
+    samples = Sample.objects.all().filter(customer__person__user = user)
+    i=1
+    for sample in samples:
+        atype=[]
+        orders = Order.objects.filter(codeOfSample = sample)
+        for order in orders:
+            atype.append(order.type.code)
+        sample.atype = atype
+        print(sample.atype)
+    atypes = AnalyzeType.objects.all()
+
+    return render(request, 'analyzes/samples.html', {'page':page, 'samples':samples,'atypes':atypes})
+
+
+#===============================================================================
+#
+#
+#===============================================================================
+def list_types(request, samplepk):
+    if samplepk is None:
+        return
+    # TODO: если пользователь не авторизован или пользователь не заказчик или не
+    # не СуперАналитик
+    # не Аналитик тогда нефиг его сюда пускать
+
+     # TODO: Если пользователь заказчик
+    user = request.user
+    samples = Sample.objects.all().filter(customer__person__user = user)
+    i=1
+    for sample in samples:
+        atype=[]
+        orders = Order.objects.filter(codeOfSample = sample)
+        for order in orders:
+            atype.append(order.type.code)
+        sample.atype = atype
+        print(sample.atype)
+    atypes = AnalyzeType.objects.all()
+
+    return render(request, 'analyzes/samples.html', {})
