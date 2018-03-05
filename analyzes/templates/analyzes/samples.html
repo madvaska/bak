@@ -16,8 +16,33 @@
 {% endblock %}
 
 {% block content %}
+<div id="win">
+   <div class="overlay"></div>
+      <div class="visible">
+        <h2>Заголовок окна</h2>
+          <div class="content">
+            <p>Содержание</p>
+            <p>Модальное окно фиксированной ширины</p>
+          </div>
+        <button type="button" onClick="getElementById('win').style.display='none';">закрыть</button>
+    </div>
+</div>
 <h4>Таблица образцов</h4>
 <table>
+  <tr>
+    <td>Код образца</td>
+    <td>Виды анализов</td>
+    {% if role.customer %}
+      <td>Ред.</td>
+    {% endif %}
+    {% if role.superAnalyst %}
+      <td>Исполнитель</td>
+    {% endif %}
+    {% if role.analyst %}
+      <td>Получен</td>
+    {% endif %}
+
+  </tr>
   {% for sample in samples %}
   <tr>
     <td>{{sample}}</td>
@@ -25,7 +50,15 @@
       {% for ats in sample.atype  %}
         {{ats}},
       {% endfor %}
-    <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
+      {% if role.customer %}
+      <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
+      {% endif %}
+      {% if role.superAnalyst %}
+      <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
+      {% endif %}
+      {% if role.analyst %}
+      <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
+      {% endif %}
   {% endfor %}
 
 </table>

@@ -60,11 +60,6 @@ td {
   width: 300px;
 }
 
-.content {
-  float: right;
-  width: 800px;
-  background-color: white;
-}
 
 .filter {
   margin: 10px;
@@ -104,4 +99,50 @@ td {
 
 .gree {
   background-color: rgb(122, 204, 101)
+}
+
+.overlay {
+	background: #000;
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	z-index: 1000;
+	opacity: .5;
+}
+.visible {
+	background: #fff;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	margin-top: -200px;
+	overflow: hidden;
+	z-index: 2000;
+	width: 500px;
+	padding: 0px;
+	margin-left: -250px;
+}
+#win button {
+	float: right;
+	line-height: 20px;
+	margin: 1.2em;
+	border: none;
+	background: transparent;
+	color: blue;
+}
+#win button[type="button"]:hover {
+	cursor: pointer;
+	color: navy;
+	text-decoration: underline;
+}
+#win h3 {
+	text-align: center;
+	color: #555;
+}
+.content {
+	padding: 0 1em;
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	background: WhiteSmoke;
 }

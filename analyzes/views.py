@@ -33,6 +33,33 @@ def getNewCodeOrder():
 
     return(ocode.code)
 
+def getUserRole(request):
+    auth = False
+    customer = False
+    superAnalyst = False
+    analyst = False
+    admin = False
+    user = request.user
+    if user.is_authenticated:
+        auth = True
+        try:
+            Customer.objects.get(person__user = user)
+            customer = True
+        except Exception as e:
+            pass
+        try:
+            analystObject = Analyst.objects.get(person__user = user)
+            analyst = True
+            if analystObject.isHead:
+                superAnalyst = True
+        except Exception as e:
+            pass
+        try:
+            Administrator.objects.get(person__user = user)
+            admin = True
+        except Exception as e:
+            pass
+        return({'user':user,'auth':auth,'customer':customer,'analyst':analyst,'superAnalyst':superAnalyst,'admin':admin})
 
 # Create your views here.
 def orders(request, page):
@@ -47,8 +74,11 @@ def orders(request, page):
     #здесь нужно добавить проверку прав пользователя
     #
     #
+
+
     rules={'is_customer':False, 'is_analyst':False,
     'is_super_analyst':False, 'is_admin':False}
+
 
     try:
         customer = Customer.objects.get(person__user = user)
@@ -351,6 +381,9 @@ def  show_res_for_analyze(request, analyze_id, df):
 def sample_details(request, page):
     if page is None:
         page = 1
+    role = getUserRole(request)
+    #print(role.auth)
+    print(role)
     # TODO: если пользователь не авторизован или пользователь не заказчик или не
     # не СуперАналитик
     # не Аналитик тогда нефиг его сюда пускать
@@ -376,7 +409,7 @@ def sample_details(request, page):
         sample.atype = atype
     atypes = AnalyzeType.objects.all()
 
-    return render(request, 'analyzes/samples.html', {'page':page, 'samples':samples,'atypes':atypes})
+    return render(request, 'analyzes/samples.html', {'page':page, 'samples':samples,'atypes':atypes,'role':role})
 
 
 #===============================================================================
@@ -389,8 +422,9 @@ def list_types(request, samplepk):
     # TODO: если пользователь не авторизован или пользователь не заказчик или не
     # не СуперАналитик
     # не Аналитик тогда нефиг его сюда пускать
+    roles = getUserRole(request)
 
-     # TODO: Если пользователь заказчик
+    # TODO: Если пользователь заказчик
     user = request.user
     sample = Sample.objects.get(pk=samplepk)
     #получаем все типы анализов
