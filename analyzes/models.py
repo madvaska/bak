@@ -26,7 +26,6 @@ class GroupAnalyzes(models.Model):
     def __unicode__(self):
         return u"GroupAnalyzes"
 
-
 class AnalyzeType(models.Model):
     # TODO: Define fields here
     code = models.CharField(unique=True,max_length=10, verbose_name='Код')
@@ -83,7 +82,7 @@ class Order(models.Model):
     dateTime    = models.DateTimeField(default=datetime.datetime.now,verbose_name='Дата')
     code        = models.CharField(max_length=20,unique=True,verbose_name='Код заявки')
     #codeOfSample= models.CharField(max_length=20,unique=True,verbose_name='Код образца')
-    codeOfSample= models.ForeignKey(Sample, default = None, blank =True, verbose_name='Код образца')
+    codeOfSample= models.ForeignKey(Sample, default = None, blank =True, related_name='ordersam', verbose_name='Код образца')
     type        = models.ForeignKey(AnalyzeType, verbose_name='Тип анализа')
     customer    = models.ForeignKey(Customer, verbose_name='Заказчик')
     project     = models.ForeignKey(Project, verbose_name='Проект')
@@ -100,10 +99,9 @@ class Order(models.Model):
     def __str__(self):
         return(self.code)
 
-
 class SetAnalyst(models.Model):
-    order = models.OneToOneField(Order)
-    Analyst = models.ForeignKey(Analyst)
+    order = models.OneToOneField(Order,related_name='analyst')
+    analyst = models.ForeignKey(Analyst)
     assignBy = models.ForeignKey(Person)
     class Meta:
         verbose_name = 'Назначение измерителя'
@@ -111,7 +109,7 @@ class SetAnalyst(models.Model):
     def __unicode__(self):
         return uSetAnalyst
     def __str__(self):
-        return(self.order.code)
+        return(self.analyst)
 
 class DeliverySample(models.Model):
     order = models.OneToOneField(Order)
@@ -142,7 +140,6 @@ class Analyze(models.Model):
         pass
     def __str__(self):
         return(self.order.code)
-
 
 class AnalyzeDataFormat(models.Model):
     # TODO: Define fields here

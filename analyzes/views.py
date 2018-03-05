@@ -357,15 +357,23 @@ def sample_details(request, page):
 
      # TODO: Если пользователь заказчик
     user = request.user
-    samples = Sample.objects.all().filter(customer__person__user = user)
+    #Заказчик
+    samples = Sample.objects.filter(customer__person__user = user).prefetch_related('ordersam')
+    #СуперИзмеритель
+    # TODO: возможно нужно сделать ограничение по возрасту....
+    samples = Sample.objects.all().prefetch_related('ordersam')
+
     i=1
     for sample in samples:
         atype=[]
-        orders = Order.objects.filter(codeOfSample = sample)
+        orders = sample.ordersam.all()
         for order in orders:
+            try:
+                analyst = order.analyst
+            except Exception as e:
+                analyst = None
             atype.append(order.type.code)
         sample.atype = atype
-        print(sample.atype)
     atypes = AnalyzeType.objects.all()
 
     return render(request, 'analyzes/samples.html', {'page':page, 'samples':samples,'atypes':atypes})
