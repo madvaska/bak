@@ -141,6 +141,12 @@ td {
 	color: #555;
 }
 .content {
+  float: right;
+  width: 800px;
+
+}
+
+.content1 {
 	padding: 0 1em;
 	border-top: 1px solid #ccc;
 	border-bottom: 1px solid #ccc;
