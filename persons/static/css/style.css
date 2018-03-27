@@ -4,7 +4,6 @@
 
 }
 
-.header {
 width: 1100px;
 background-color:#a8a4a4
 }
@@ -37,7 +36,7 @@ width: 1100px;
 }
 
 .main-block {
-background-color: grey;
+background-color: #dfdfdf;
 }
 
 .contenttable {

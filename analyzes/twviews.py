@@ -189,3 +189,16 @@ class AddSample(CreateView):
     fields = ['dateTime','customer','code','status','comment']
     #exclude =['order']
     success_url = "/a/o"
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        if user.is_authenticated:
+            print('auth')
+            analyst = Customer.objects.get(person__user=user)
+            self.initial['customer']=analyst
+        else:
+            print('not auth')
+            raise Exception('You are not auth.')
+            return super(AddSample,self).get(request, *args, **kwargs)
+        print(user)
+        return super(AddSample,self).get(request, *args, **kwargs)
