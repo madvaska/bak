@@ -186,19 +186,29 @@ class AddSample(CreateView):
     #    status = models.BooleanField(default=False, verbose_name = 'Образец получен лабораторией')
     #    comment = models.TextField( blank = True, verbose_name='Описание образца' )
 
-    fields = ['dateTime','customer','code','status','comment']
+    fields = ['dateTime','customer','code','comment']
     #exclude =['order']
-    success_url = "/a/o"
+    success_url = "/a/s"
 
     def get(self, request, *args, **kwargs):
         user = request.user
         if user.is_authenticated:
-            print('auth')
-            analyst = Customer.objects.get(person__user=user)
-            self.initial['customer']=analyst
+            try:
+                customer = Customer.objects.get(person__user=user)
+                self.initial['customer']=customer
+            except Exception as e:
+                raise Exception('You are not customer.')
         else:
-            print('not auth')
             raise Exception('You are not auth.')
-            return super(AddSample,self).get(request, *args, **kwargs)
-        print(user)
+
         return super(AddSample,self).get(request, *args, **kwargs)
+
+    def form_valid(self,form):
+        print("test2")
+        user = self.initial['customer']
+        try:
+            customer = Customer.objects.get(pk=user.pk)
+            form.instance.customer = customer
+        except Exception as e:
+            raise Exception('You are not customer.')
+        return super(AddSample,self).form_valid(form)

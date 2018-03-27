@@ -79,10 +79,6 @@ class Analyst(models.Model):
     default=None, verbose_name='Добавлен пользователем')
     #флаг что это руководитель
     isHead = models.BooleanField(default=False)
-    def __unicode__(self):
-        return self.person
-    def __str__(self):
-        return self.person.user.username
 
     class Meta:
         verbose_name = 'Измеритель'
@@ -91,7 +87,7 @@ class Analyst(models.Model):
     def __unicode__(self):
         pass
     def __str__(self):
-        return self.person.user.username
+        return str(self.person.user.username)
 
 class Administrator(models.Model):
     # TODO: Define fields here

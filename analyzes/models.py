@@ -75,7 +75,7 @@ class Sample(models.Model):
         return u"Sample"
 
     def __str__(self):
-        return(self.code + " от " +  str(self.dateTime))
+        return(self.code + " от " +  str(self.dateTime) +" "+ str(self.customer))
 
 class Order(models.Model):
     # TODO: Define fields here
@@ -109,7 +109,7 @@ class SetAnalyst(models.Model):
     def __unicode__(self):
         return uSetAnalyst
     def __str__(self):
-        return(self.analyst)
+        return(self.analyst.person.user.username)
 
 class DeliverySample(models.Model):
     order = models.OneToOneField(Order)

@@ -48,13 +48,23 @@
     <td>{{sample}}</td>
     <td>
       {% for ats in sample.atype  %}
-        {{ats}},
+        {{ats.type.code}}:{{ats.analyst}},
       {% endfor %}
       {% if role.customer %}
       <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
       {% endif %}
       {% if role.superAnalyst %}
-      <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
+      <script type="text/javascript">
+        $(document).ready(function() {
+          $("#s{{sample.pk}}").click(function(){
+              alert("Hello World! {{sample.pk}}");
+              $("#dsample").html("{{sample}}");
+              $("#spk").attr("value","{{sample.pk}}")
+
+          })
+      })
+      </script>
+      <td><button type="button" id="s{{sample.pk}}" name="button">+</button></td>
       {% endif %}
       {% if role.analyst %}
       <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
@@ -62,4 +72,26 @@
   {% endfor %}
 
 </table>
+<br />
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#submit1").click(function(){
+        alert("Hello World!")
+    })
+})
+</script>
+<h4> Назначить одного исполнителя для испытания образца <div id="dsample">
+
+</div> (для всех методов)</h4>
+<form id="analyst1" class="analyst1" action="" method="post">
+  {% csrf_token %}
+  <input type="text" id="spk" name="order1" value="">
+  <select class="asel1" name="analyst">
+    <option value="0"}>---------------</option>
+    {% for customer in customers %}
+      <option value={{customer.pk}}>{{customer}}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" id="submit1" name="submit" value="Назначить">
+</form>
 {% endblock %}

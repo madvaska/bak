@@ -35,28 +35,25 @@ def getNewCodeOrder():
 
 def getUserRole(request):
     auth = False
-    customer = False
-    superAnalyst = False
-    analyst = False
-    admin = False
+    customer = None
+    superAnalyst = None
+    analyst = None
+    admin = None
     user = request.user
     if user.is_authenticated:
         auth = True
         try:
-            Customer.objects.get(person__user = user)
-            customer = True
+            customer = Customer.objects.get(person__user = user)
         except Exception as e:
             pass
         try:
-            analystObject = Analyst.objects.get(person__user = user)
-            analyst = True
-            if analystObject.isHead:
-                superAnalyst = True
+            analyst = Analyst.objects.get(person__user = user)
+            if analyst.isHead:
+                superAnalyst = analyst
         except Exception as e:
             pass
         try:
-            Administrator.objects.get(person__user = user)
-            admin = True
+            admin = Administrator.objects.get(person__user = user)
         except Exception as e:
             pass
         return({'user':user,'auth':auth,'customer':customer,'analyst':analyst,'superAnalyst':superAnalyst,'admin':admin})
@@ -379,37 +376,47 @@ def  show_res_for_analyze(request, analyze_id, df):
 #
 #===============================================================================
 def sample_details(request, page):
-    if page is None:
-        page = 1
     role = getUserRole(request)
-    #print(role.auth)
     print(role)
-    # TODO: если пользователь не авторизован или пользователь не заказчик или не
-    # не СуперАналитик
-    # не Аналитик тогда нефиг его сюда пускать
+    if role['superAnalyst']:
+        samples = Sample.objects.all().prefetch_related('ordersam')
+        print(request.POST)
 
-     # TODO: Если пользователь заказчик
-    user = request.user
+    #Аналитик
+    elif role['analyst']:
+        samples = []
+        orders = Order.objects.all().prefetch_related('analyst').filter(analyst__analyst=role['analyst'])
+        for order in orders:
+            if samples.count(order.codeOfSample) == 0:
+                samples.append(order.codeOfSample)
     #Заказчик
-    samples = Sample.objects.filter(customer__person__user = user).prefetch_related('ordersam')
-    #СуперИзмеритель
-    # TODO: возможно нужно сделать ограничение по возрасту....
-    samples = Sample.objects.all().prefetch_related('ordersam')
+    elif role['customer']:
+        samples = Sample.objects.filter(customer=role['customer']).prefetch_related('ordersam')
+    else:
+        samples = []
+        pass
 
-    i=1
+    samples = Paginator(samples,30)
+    if page is None:
+        page_num = 1
+    else:
+        page_num = page
+    try:
+        samples = samples.page(page_num)
+    except EmptyPage:
+        samples = samples.page(1)
+
     for sample in samples:
         atype=[]
         orders = sample.ordersam.all()
         for order in orders:
-            try:
-                analyst = order.analyst
-            except Exception as e:
-                analyst = None
             atype.append(order.type.code)
-        sample.atype = atype
+        sample.atype = orders
     atypes = AnalyzeType.objects.all()
+    customers = Customer.objects.all()
 
-    return render(request, 'analyzes/samples.html', {'page':page, 'samples':samples,'atypes':atypes,'role':role})
+    return render(request, 'analyzes/samples.html', {'page':page,
+    'samples':samples,'atypes':atypes,'role':role, 'customers':customers})
 
 
 #===============================================================================
