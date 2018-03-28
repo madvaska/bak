@@ -16,6 +16,12 @@
 {% endblock %}
 
 {% block content %}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#fform1').hide();
+})
+</script>
+<!--
 <div id="win">
    <div class="overlay"></div>
       <div class="visible">
@@ -27,14 +33,13 @@
         <button type="button" onClick="$('#win').hide();">закрыть</button>
     </div>
 </div>
+-->
+<div id="tblo">
 <h4>Таблица образцов</h4>
 <table>
   <tr>
     <td>Код образца</td>
     <td>Виды анализов</td>
-    {% if role.customer %}
-      <td>Ред.</td>
-    {% endif %}
     {% if role.superAnalyst %}
       <td>Исполнитель</td>
     {% endif %}
@@ -45,26 +50,36 @@
   </tr>
   {% for sample in samples %}
   <tr>
-    <td>{{sample}}</td>
+    <td>
+      {% if role.customer and sample.fullStatus < 2 %}
+        <a href={% url "list_types" %}{{sample.pk}} >{{sample}}</a></td>
+      {% else %}
+        {{sample}}
+      {% endif %}
     <td>
       {% for ats in sample.atype  %}
         {{ats.type.code}}:{{ats.analyst}},
       {% endfor %}
-      {% if role.customer %}
-      <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
-      {% endif %}
       {% if role.superAnalyst %}
-      <script type="text/javascript">
-        $(document).ready(function() {
-          $("#s{{sample.pk}}").click(function(){
-              alert("Hello World! {{sample.pk}}");
-              $("#dsample").html("{{sample}}");
-              $("#spk").attr("value","{{sample.pk}}")
-
-          })
-      })
-      </script>
-      <td><button type="button" id="s{{sample.pk}}" name="button">+</button></td>
+        {% if sample.fullStatus < 1  %}
+          <td></td>
+        {% else %}
+          {% if sample.fullStatus < 3 %}
+            <script type="text/javascript">
+              $(document).ready(function() {
+                $("#s{{sample.pk}}").click(function(){
+                    $("#dsample").html("{{sample}}");
+                    $("#spk").attr("value","{{sample.pk}}");
+                    $('#tblo').hide()
+                    $('#fform1').show();
+                })
+            })
+              </script>
+              <td><button type="button" id="s{{sample.pk}}" name="button">+</button></td>
+          {% else %}
+              <td>Образец получен</td>
+          {% endif %}
+        {% endif %}
       {% endif %}
       {% if role.analyst %}
       <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
@@ -72,21 +87,58 @@
   {% endfor %}
 
 </table>
-<br />
+{% if samples.paginator.num_pages > 1 %}
+
+<div id="pagination">
+  {% if samples.has_previous %}
+    <div id="previous-page">
+      <a href={% url "samples"%}{{ samples.previous_page_number }} >
+      &lt</a>
+    </div>
+  {% endif %}
+{% if samples.has_next %}
+  <div id="next-page">
+    <a href={% url "samples" %}{{samples.next_page_number}}>&gt</a>
+  </div>
+{% endif %}
+</div>
+<div id="num-pages">
+{% for pn in samples.paginator.page_range  %}
+  {% if not forloop.first %}
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+  {% endif %}
+  {% if samples.number != pn %}
+    <a href={% url "samples" %}{{pn}}>
+  {% endif %}
+  {{pn}}
+  {% if samples.number != pn %}
+    </a>
+  {% endif %}
+{% endfor %}
+
+    </div>
+{% endif %}
+
+
+</div>
+
 <script type="text/javascript">
   $(document).ready(function() {
     $("#submit1").click(function(){
-        alert("Hello World!")
+        $('#fform1').hide();
+        $('#tblo').show()
     })
 })
 </script>
+<div id="fform1">
+<br />
 <h4> Назначить одного исполнителя для испытания образца <div id="dsample">
 
 </div> (для всех методов)</h4>
 <form id="analyst1" class="analyst1" action="" method="post">
   {% csrf_token %}
-  <input type="text" id="spk" name="order1" value="">
-  <select class="asel1" name="analyst">
+  <input type="text" id="spk" name="samplepk" value="">
+  <select class="asel1" name="analystpk">
     <option value="0"}>---------------</option>
     {% for customer in customers %}
       <option value={{customer.pk}}>{{customer}}</option>
@@ -94,4 +146,5 @@
   </select>
   <input type="submit" id="submit1" name="submit" value="Назначить">
 </form>
+</div>
 {% endblock %}

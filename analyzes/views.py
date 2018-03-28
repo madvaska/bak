@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze
 from .models import AnalyzeDataFormat, DataFormatField
+from .models import SetAnalyst
 from .models import OrdersCode
 from .models import Sample
 from persons.models import Customer,Person,Analyst,Administrator
@@ -58,7 +59,48 @@ def getUserRole(request):
             pass
         return({'user':user,'auth':auth,'customer':customer,'analyst':analyst,'superAnalyst':superAnalyst,'admin':admin})
 
-# Create your views here.
+def getSampleStatus(sample):
+    status = 0
+    #Статусы
+    #   0   -   просто образец
+    #   1   -   сделаны заказы испытаний
+    #   2   -   назначены испытатели
+    #   3   -   получен образец
+    #   4   -   испытания частично завершены
+    #   5   -   все испытания завершены
+    try:
+        orders = sample.ordersam.all()
+        if len(orders) == 0:
+            raise
+        status = 1
+        pass
+    except Exception as e:
+        pass
+    else:
+        try:
+            for order in orders:
+                setAnalyst = order.analyst
+                print(setAnalyst)
+        except Exception as e:
+            pass
+        else:
+            status = 2
+            if sample.status:
+                status=3
+                accFlag = True
+                for order in orders:
+                    if order.executed:
+                        status = 4
+                    else:
+                        accFlag = False
+                if status and accFlag:
+                    status = 5
+    return status
+
+
+def getOrderStatus(order):
+    return None
+
 def orders(request, page):
     if not request.user.is_authenticated:
         raise PermissionDenied
@@ -377,26 +419,50 @@ def  show_res_for_analyze(request, analyze_id, df):
 #===============================================================================
 def sample_details(request, page):
     role = getUserRole(request)
-    print(role)
+    print(request.POST)
     if role['superAnalyst']:
-        samples = Sample.objects.all().prefetch_related('ordersam')
-        print(request.POST)
+        samples = Sample.objects.all().prefetch_related('ordersam').order_by("dateTime")
+        samplepk = request.POST.get('samplepk',default=None)
+        analystpk = request.POST.get('analystpk',default=None)
+        print("samplepk")
+        print(samplepk)
+        if samplepk is None:
+            pass
+        else:
+            try:
+                analyst = Analyst.objects.get(pk=int(analystpk))
+            except Exception as e:
+                pass
+            else:
+                sample = Sample.objects.prefetch_related('ordersam').get(pk=int(samplepk))
+                orders = sample.ordersam.all()
+                print("orders")
+                print(orders)
+                for order in orders:
+                    try:
+                        setAnalyst=order.analyst
+                        print(setAnalyst)
+                        pass
+                    except Exception as e:
+                        print("нет")
+                        SetAnalyst.objects.create(order=order,analyst=analyst,assignBy=role['analyst'].person)
 
     #Аналитик
     elif role['analyst']:
         samples = []
-        orders = Order.objects.all().prefetch_related('analyst').filter(analyst__analyst=role['analyst'])
+        orders = Order.objects.all().prefetch_related('analyst').filter(analyst__analyst=role['analyst']).order_by("dateTime")
         for order in orders:
             if samples.count(order.codeOfSample) == 0:
                 samples.append(order.codeOfSample)
     #Заказчик
     elif role['customer']:
-        samples = Sample.objects.filter(customer=role['customer']).prefetch_related('ordersam')
+        samples = Sample.objects.filter(customer=role['customer']).prefetch_related('ordersam').order_by("dateTime")
     else:
         samples = []
         pass
 
-    samples = Paginator(samples,30)
+
+    samples = Paginator(samples,6)
     if page is None:
         page_num = 1
     else:
@@ -412,6 +478,7 @@ def sample_details(request, page):
         for order in orders:
             atype.append(order.type.code)
         sample.atype = orders
+        sample.fullStatus = getSampleStatus(sample)
     atypes = AnalyzeType.objects.all()
     customers = Customer.objects.all()
 
