@@ -28,13 +28,12 @@
 
 </script>
 <div id="envelope" class="envelope">
-  <a class="close-btn" href="javascript:void(0)" onclick = "document.getElementById('envelope').style.display='none';document.getElementById('fade').style.display='none'">Закрыть</a>
-    <h4 class="title">Добавьте виды анализов и укажите проект</h4>
+<h4 class="title">Добавьте виды анализов для образца {{sample}} и укажите проект</h4>
 <form method="post" action="">
 {% csrf_token %}
 <select multiple name="atype">
   {% for atype  in atypes %}
-  <option value={{atype.pk}}>{{atype}}</option>
+  <option value={{atype.pk}} {{atype.selected}}>{{atype}}</option>
   {% endfor %}
 </select>
 <select name=project>
@@ -45,9 +44,10 @@
 <input type="submit" name="send" value="Добавить" class="send-message">
 </form>
 </div>
-<div id="fade" class="black-overlay"></div>
-<div id="tblo">
 
+<div id="fade" class="black-overlay"></div>
+
+<div id="tblo">
 <h4>Образец {{sample}}</h4>
 Заказаны анализы
 <table>

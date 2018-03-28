@@ -493,53 +493,62 @@ def sample_details(request, page):
 def list_types(request, samplepk):
     if samplepk is None:
         return
-    # TODO: если пользователь не авторизован или пользователь не заказчик или не
-    # не СуперАналитик
-    # не Аналитик тогда нефиг его сюда пускать
     roles = getUserRole(request)
-
-    # TODO: Если пользователь заказчик
-    user = request.user
-    sample = Sample.objects.get(pk=samplepk)
-    #получаем все типы анализов
-    atypes = AnalyzeType.objects.all()
-    atype = request.POST.getlist('atype',default=None)
-    projectpk = request.POST.get('project',default=None)
-    if projectpk is None:
-        project = None
+    if roles['customer'] is None:
+        pass
     else:
-        project =  Project.objects.get(pk=projectpk)
-    print("project = "+str(project))
-    projects = Project.objects.all()
-    #print(atype)
-    #получаем все заказы для этого образца
-    orders = Order.objects.filter(codeOfSample=sample)
-    yettypes = []
-    for order in orders:
-        yettypes.append(order.type.pk)
-    for at in atype:
-        value = int(at)
-        if value in yettypes:
-            print('Уже есть '+str(value))
-            continue
-        #dateTime    = models.DateTimeField(default=datetime.datetime.now,verbose_name='Дата')
-        #code        = models.CharField(max_length=20,unique=True,verbose_name='Код заявки')
-        #codeOfSample= models.ForeignKey(Sample, default = None, blank =True, verbose_name='Код образца')
-        #type        = models.ForeignKey(AnalyzeType, verbose_name='Тип анализа')
-        #customer    = models.ForeignKey(Customer, verbose_name='Заказчик')
-        #project     = models.ForeignKey(Project, verbose_name='Проект')
-        #comment     = models.TextField(blank=True, verbose_name='Комментарий')
-        #флаг что по этому заказу сделан анализ и данные введены
-        #executed    = models.BooleanField(default=False, verbose_name='Анализ сделан и данные введены')
-        #создать новый заказ
-        Order.objects.create(
-        code = getNewCodeOrder(),
-        codeOfSample=sample,
-        type=AnalyzeType.objects.get(pk=value),
-        customer=Customer.objects.get(person__user=user),
-        project=project,
-        executed=False
-        )
+        sample = Sample.objects.get(pk=samplepk)
+        if sample.customer == roles['customer']:
+            atypes = AnalyzeType.objects.all()
+            atype = request.POST.getlist('atype',default=None)
+            projectpk = request.POST.get('project',default=None)
+            if projectpk is None:
+                project = None
+            else:
+                project =  Project.objects.get(pk=projectpk)
+            if atype is None:
+                orders = sample.ordersam.all()
+                yettypes = []
+                for order in orders:
+                    yettypes.append(order.type.pk)
+
+                for atype1 in atypes:
+                    if atype1.pk in yettypes:
+                        atype1.selected = "selected"
+                    else:
+                        atype1.selected = ""
+            else:
+                print("project = "+str(project))
+                projects = Project.objects.all()
+                #print(atype)
+                #получаем все заказы для этого образца
+                orders = sample.ordersam.all()
+                yettypes = []
+                for order in orders:
+                    yettypes.append(order.type.pk)
+                for atype1 in atypes:
+                    if atype1.pk in yettypes:
+                        atype1.selected = "selected"
+                    else:
+                        atype1.selected = ""
+                for at in atype:
+                    value = int(at)
+                    if value in yettypes:
+                        print('Уже есть '+str(value))
+                        continue
+                    #создать новый заказ
+                    Order.objects.create(
+                    code = getNewCodeOrder(),
+                    codeOfSample=sample,
+                    type=AnalyzeType.objects.get(pk=value),
+                    customer=Customer.objects.get(person__user=user),
+                    project=project,
+                    executed=False
+                    )
+        else:
+            atypes = []
+            projects = []
+
     #добавить новый заказ к заказам
-    orders = Order.objects.filter(codeOfSample=sample)
+    orders = sample.ordersam.all()
     return render(request, 'analyzes/lt.html', {'sample':sample,'atypes':atypes,'orders':orders,'projects':projects})
