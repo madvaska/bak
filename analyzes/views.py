@@ -493,6 +493,7 @@ def sample_details(request, page):
 def list_types(request, samplepk):
     if samplepk is None:
         return
+    error = None
     roles = getUserRole(request)
     if roles['customer'] is None:
         pass
@@ -501,6 +502,7 @@ def list_types(request, samplepk):
         if sample.customer == roles['customer']:
             atypes = AnalyzeType.objects.all()
             atype = request.POST.getlist('atype',default=None)
+            print(atype)
             projectpk = request.POST.get('project',default=None)
             if projectpk is None:
                 project = None
@@ -541,14 +543,15 @@ def list_types(request, samplepk):
                     code = getNewCodeOrder(),
                     codeOfSample=sample,
                     type=AnalyzeType.objects.get(pk=value),
-                    customer=Customer.objects.get(person__user=user),
+                    customer=Customer.objects.get(person__user=roles['user']),
                     project=project,
                     executed=False
                     )
         else:
             atypes = []
             projects = []
+            error="У Вас нет прав для правки чужих заявок."
 
     #добавить новый заказ к заказам
     orders = sample.ordersam.all()
-    return render(request, 'analyzes/lt.html', {'sample':sample,'atypes':atypes,'orders':orders,'projects':projects})
+    return render(request, 'analyzes/lt.html', {'sample':sample,'atypes':atypes,'orders':orders,'projects':projects,'error':error})

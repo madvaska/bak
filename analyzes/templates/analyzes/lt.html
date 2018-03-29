@@ -1,18 +1,5 @@
 {% extends "index.html" %}
 {% block left_menu %}
-<!--
-<div width = 90 >
-  <form  action="" method="post">
-    <select multiple  name="types" style="width: 90%">
-      <option disabled value=0>Виды анализов</option>
-      {% for type in atypes %}
-        <option value={{type.id}}>{{type}}</option>
-      {% endfor %}
-    </select>
-    <input type="submit" name="" value="Выбрать">
-  </form>
-</div>
--->
 {% endblock %}
 
 {% block content %}
@@ -27,23 +14,27 @@
 })
 
 </script>
-<div id="envelope" class="envelope">
-<h4 class="title">Добавьте виды анализов для образца {{sample}} и укажите проект</h4>
-<form method="post" action="">
-{% csrf_token %}
-<select multiple name="atype">
-  {% for atype  in atypes %}
-  <option value={{atype.pk}} {{atype.selected}}>{{atype}}</option>
-  {% endfor %}
-</select>
-<select name=project>
-  {% for project in projects %}
-    <option value={{project.pk}}>{{project}}</option>
-  {% endfor %}
-</select>
-<input type="submit" name="send" value="Добавить" class="send-message">
-</form>
-</div>
+{% if error %}
+
+{% else %}
+  <div id="envelope" class="envelope">
+  <h4 class="title">Добавьте виды анализов для образца {{sample}} и укажите проект</h4>
+  <form method="post" action="">
+  {% csrf_token %}
+  <select multiple name="atype" size="25">
+    {% for atype  in atypes %}
+    <option value={{atype.pk}} {{atype.selected}}>{{atype}}</option>
+    {% endfor %}
+  </select>
+  <select name=project>
+    {% for project in projects %}
+      <option value={{project.pk}}>{{project}}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" name="send" value="Добавить" class="send-message">
+  </form>
+  </div>
+{% endif %}
 
 <div id="fade" class="black-overlay"></div>
 
@@ -71,10 +62,14 @@
   {% endfor %}
   <tr>
     <td>
-{% if sample.status  %}
-  Образец получен лабораторией. Набор анализов изменению не подлежит
+{% if error %}
+  <h4>{{error}}</h4>
 {% else %}
-  <button  id="btblo"> Добавить анализ(ы) </button>
+  {% if sample.status  %}
+    Образец получен лабораторией. Набор анализов изменению не подлежит
+  {% else %}
+    <button  id="btblo"> Добавить анализ(ы) </button>
+  {% endif %}
 {% endif %}
     </td>
   </tr>
