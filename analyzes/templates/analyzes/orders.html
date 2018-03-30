@@ -51,6 +51,17 @@
   <input class="mbutton" type="submit" name="but2" value="Отключить отбор">
 </fieldset>
 </form>
+
+<div id="analyst">
+  <form class="" action="" method="post">
+    {% csrf_token %}
+    <select id="selanalyst" name="">
+      <option value="0">выберите измерителя</option>
+      <input type="submit" name="" value="setAnalyst">
+    </select>
+  </form>
+
+</div>
 {% endblock %}
 
 {% block content %}
@@ -62,8 +73,9 @@
         <td>Дата</td>
         <td>Код/Код образца</td>
         <td>Тип </td>
-        <td>Заказчик</td>
+        <!--<td>Заказчик</td>-->
         <td>Проект</td>
+        <td>Исполнитель</td>
         <td>Комментарий</td>
         <td> Выполнен/Нет </td>
         <td>Просмотр</td>
@@ -72,13 +84,31 @@
     {% if order.executed %}
     <tr class="gree">
     {% else %}
-    <tr>
+    <tr class="tr1">
     {% endif %}
       <td>{{order.dateTime}}</td>
       <td>{{order.code}} <br/> {{order.codeOfSample}}</td>
       <td> {{order.type}} </td>
-      <td>{{order.customer}}</td>
+      <!--<td>{{order.customer}}</td>-->
       <td>{{order.project}}</td>
+
+      <td>
+        <script type="text/javascript">
+          function selectAnalyst(event){
+            var myId = "#" + event.target.id
+            alert('Вы кликнули по кнопке, с id ' + event.target.id);
+            alert(event.target.parentNode.parentNode);
+            alert($(myId).html());
+            alert( $(myId).parents('tr') );
+          }
+        </script>
+        {% if order.analyst %}{{order.analyst}}
+        {% else %}
+        <button id="order{{order.pk}}" onclick="selectAnalyst(event)">
+          <span class="glyphicon glyphicon-plus"></span>
+        </button>
+        {% endif %}
+      </td>
       <td>{{order.comment}}</td>
       <td>
         {% if order.executed %}
@@ -113,7 +143,6 @@
         <a href={% url "orders" %}{{orders.next_page_number}}>&gt</a>
       </div>
     {% endif %}
-    </div>
     <div id="num-pages">
     {% for pn in orders.paginator.page_range  %}
       {% if not forloop.first %}
@@ -129,5 +158,6 @@
     {% endfor %}
 
         </div>
+      </div>
     {% endif %}
 {% endblock %}
