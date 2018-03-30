@@ -55,6 +55,7 @@
 <div id="analyst">
   <form class="" action="" method="post">
     {% csrf_token %}
+    <input  id='orderpk' type="text" name="" value="">
     <select id="selanalyst" name="">
       <option value="0">выберите измерителя</option>
       <input type="submit" name="" value="setAnalyst">
@@ -98,8 +99,10 @@
             var myId = "#" + event.target.id
             alert('Вы кликнули по кнопке, с id ' + event.target.id);
             alert(event.target.parentNode.parentNode);
-            alert($(myId).html());
-            alert( $(myId).parents('tr') );
+            alert(myId);
+            alert( $(myId).parents('tr').html());
+            $('#orderpk').attr("value",myId.substring(6))
+            $(myId).parents('tr').css('background-color','#f72407')
           }
         </script>
         {% if order.analyst %}{{order.analyst}}
