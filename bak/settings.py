@@ -130,3 +130,11 @@ LOGIN_REDIRECT_URL = '/welcome/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'uploads')
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
+
+# EMAIL
+DEFAULT_FROM_EMAIL="admin@catalyst.su"
+EMAIL_HOST="ja.catalyst.su"
+EMAIL_PORT="587"
+EMAIL_HOST_USER="admin@catalyst.su"
+EMAIL_HOST_PASSWORD="729D8manz6"
+EMAIL_USE_TLS=True

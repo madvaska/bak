@@ -2,7 +2,7 @@
 {% block left_menu %}
 <p>
   <form class="filter" action="/a/o/add/" method="get">
-    <input type="submit" name="" value="Новая заявка">
+    <input type="submit" name="newOrder" value="Новый заказ">
   </form>
 </p>
 
@@ -47,19 +47,23 @@
     <input  type="checkbox" name="executed" value="on" hidden> <br/>
     </label>
   <br />
-  <input class="mbutton" type="submit" name="but1" value="Отобрать">
-  <input class="mbutton" type="submit" name="but2" value="Отключить отбор">
+  <input class="mbutton" type="submit" name="filterOn" value="Отобрать">
+  <input class="mbutton" type="submit" name="filterOff" value="Отключить отбор">
 </fieldset>
 </form>
 
 <div id="analyst">
   <form class="" action="" method="post">
     {% csrf_token %}
-    <input  id='orderpk' type="text" name="" value="">
-    <select id="selanalyst" name="">
+    <input  id='orderpk' type="text" name="orderpk" value="">
+    <select id="selectAnalystpk" name="selectAnalystpk">
       <option value="0">выберите измерителя</option>
-      <input type="submit" name="" value="setAnalyst">
+      {% for analyst in analysts %}
+        <option value={{analyst.pk}}>{{analyst}}</option>
+      {% endfor %}
+
     </select>
+    <input type="submit" name="setAnalyst" value="setAnalyst">
   </form>
 
 </div>

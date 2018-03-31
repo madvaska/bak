@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
+from django.core.mail import send_mail
 import datetime
 
 
@@ -97,11 +98,22 @@ def getSampleStatus(sample):
                     status = 5
     return status
 
-
 def getOrderStatus(order):
     return None
 
+
+def getFormName(POSTDICT, formlist):
+    for key in POSTDICT:
+        for key2 in formlist:
+            #print ("POST[%s]=%s : %s"%(key,POSTDICT[key],key2))
+            if key in formlist[key2]:
+                return (key2,key)
+    return None
+
+
 def orders(request, page):
+    error = None
+    role = getUserRole(request)
     if not request.user.is_authenticated:
         raise PermissionDenied
         print('неавторизованный')
@@ -146,6 +158,111 @@ def orders(request, page):
         raise Exception('Пошел на фиг.')
         return render(request, 'analyzes/orders.html' )
 
+    analysts = Analyst.objects.all()
+    print('analysts')
+    print(analysts)
+
+    print('<!--POST')
+    print(request.POST)
+    print(len(request.POST))
+    print('POST-->')
+    if len(request.POST) > 0 : #Обработаем форзвращенные значения формы
+        #0. Зададим список форм которые мы обрабатываем в этой функции
+        formlist = {'newOrder':('newOrder'),'filter':('filterOk','filterOff'),
+        'setAnalyst':('setAnalyst'),}
+        #1. Определим данные какой формы пришли
+        formName = getFormName(request.POST, formlist)
+        print(formName)
+        #1.1 Если не смогли определить форму, то сохраним ошибку
+        # и покажем её на странице
+        if formName is None:
+            error="Не определена форма. Свяжитесь с разработчиком."
+        #1.2 Если смогли то продолжим обработку
+        #2. Проверим имеет ли пользователь право работать с этой формой
+        #2.1. Если нет, то формируем ошибку и покажем это на странице
+        if formName[0] == 'newOrder':
+            if role['customer'] is None:
+                error="Новый заказ может сделать только заказчик"
+        elif formName[0] == 'filter':
+            if role['auth'] == False:
+                error="Только авторизованный пользователь может просматривать заказы"
+        elif formName[0] == 'setAnalyst':
+            if role['superAnalyst'] is None:
+                error="Только суперАналитик может назначать измерителей"
+        else:
+            error="Форма не опознана"
+        #2.2. Если да, то продолжим
+        #3. Определим что форма заполнена корректно
+        #3.1. Проверим существуют ли объекты указанные в данных
+        if formName[0] == 'newOrder':
+            # TODO:
+            pass
+        elif formName[0] == 'filter':
+            # TODO:
+            pass
+        elif formName[0] == 'setAnalyst':
+            try:
+                print('analystpk')
+                print
+
+                analyst = Analyst.objects.get(pk=request.POST.get('selectAnalystpk',default=None))
+            except Exception as e:
+                error="Введен несуществующий измеритель"
+            try:
+                order = Order.objects.get(pk=request.POST.get('orderpk',default=None))
+            except Exception as e:
+                error="Выбран несуществующий заказ"
+            else:
+                pass
+            pass
+        #3.2. Проверим имеет ли пользователь право выполнять требуемые  операции
+        # с указанными объектами
+        # TODO:
+        if formName[0] == 'newOrder':
+            # TODO:
+            pass
+        elif formName[0] == 'filter':
+            # TODO:
+            pass
+        elif formName[0] == 'setAnalyst':
+            try:
+                temp = order.analyst
+                error="Уже назначен измеритель для заказа"
+            except Exception as e:
+                pass
+            if order.executed:
+                error="Заказ уже выполнен"
+            pass
+        #3.3. Если некоректно то сохраним ошибку и покажем её на странице
+        # TODO:
+        #3.4. Если корректно то продолжим
+        #4. Обработаем полученные данные
+        # TODO:
+        if formName[0] == 'newOrder':
+            # TODO:
+            pass
+        elif formName[0] == 'filter':
+            # TODO:
+            pass
+        elif formName[0] == 'setAnalyst':
+            try:
+                print(order)
+                print(analyst)
+                SetAnalyst.objects.create(order=order,analyst=analyst,assignBy=role['superAnalyst'].person)
+                send_mail('Subject here2', 'Here is the message2.', 'admin@catalyst.su',
+                [role['user'].email], fail_silently=False)
+            except Exception as e:
+                raise
+            else:
+                pass
+            pass
+        if error is not None:
+            print("error = %s"%error)
+        #4.1 Если данные не удалось обработать, то сохраняем ошибку
+        # и покажем её на странице
+        #4.2 Если данные успешно обработаны, то продолжим отрисовку страницы
+    else: #Нет данных посланных пост. необходимо начальное заполнение
+        pass
     types = AnalyzeType.objects.all().order_by('code')
     projects = Project.objects.all().order_by('name')
     print('trace1')
@@ -236,7 +353,8 @@ def orders(request, page):
 
     print(orders.paginator.num_pages)
     return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,
-    'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected})
+    'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected,
+    'analysts':analysts})
 
 def order_details(request,id):
     if id is None:
@@ -495,6 +613,11 @@ def list_types(request, samplepk):
         return
     error = None
     roles = getUserRole(request)
+
+    analysts = Analyst.objects.all()
+    print('analysts')
+    print(analysts)
+
     if roles['customer'] is None:
         pass
     else:
@@ -554,4 +677,4 @@ def list_types(request, samplepk):
 
     #добавить новый заказ к заказам
     orders = sample.ordersam.all()
-    return render(request, 'analyzes/lt.html', {'sample':sample,'atypes':atypes,'orders':orders,'projects':projects,'error':error})
+    return render(request, 'analyzes/lt.html', {'sample':sample,'atypes':atypes,'orders':orders,'projects':projects,'analysts':analysts,'error':error})
