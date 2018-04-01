@@ -14,6 +14,9 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 import datetime
+#test
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
 
 
 def getNewCodeOrder():
@@ -112,6 +115,26 @@ def getFormName(POSTDICT, formlist):
 
 
 def orders(request, page):
+
+##
+    # Create the HttpResponse object with the appropriate PDF headers.
+    #response = HttpResponse(content_type='application/pdf')
+    #response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+
+    # Create the PDF object, using the response object as its "file."
+    #p = canvas.Canvas(response)
+
+    # Draw things on the PDF. Here's where the PDF generation happens.
+    # See the ReportLab documentation for the full list of functionality.
+    #p.drawString(100, 100, "Hello world.")
+
+    # Close the PDF object cleanly, and we're done.
+    #p.showPage()
+    #p.save()
+    #return response
+
+##
+
     error = None
     role = getUserRole(request)
     if not request.user.is_authenticated:
@@ -249,8 +272,10 @@ def orders(request, page):
                 print(order)
                 print(analyst)
                 SetAnalyst.objects.create(order=order,analyst=analyst,assignBy=role['superAnalyst'].person)
-                send_mail('Subject here2', 'Here is the message2.', 'admin@catalyst.su',
-                [role['user'].email], fail_silently=False)
+                email = analyst.person.user.email
+                if email is not None:
+                    send_mail('Subject here2', 'Here is the message2.', 'admin@catalyst.su',
+                    [email], fail_silently=False)
             except Exception as e:
                 raise
             else:
