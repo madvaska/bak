@@ -65,10 +65,11 @@ def getSampleStatus(sample):
     #Статусы
     #   0   -   просто образец
     #   1   -   сделаны заказы испытаний
-    #   2   -   назначены испытатели
+    #   2   -   назначены ВСЕ испытатели
     #   3   -   получен образец
-    #   4   -   испытания частично завершены
-    #   5   -   все испытания завершены
+    #   4   -   получен образец И назначены ВСЕ испытатели
+    #   5   -   испытания частично завершены
+    #   6   -   все испытания завершены
     try:
         orders = sample.ordersam.all()
         if len(orders) == 0:
@@ -83,19 +84,21 @@ def getSampleStatus(sample):
                 setAnalyst = order.analyst
                 print(setAnalyst)
         except Exception as e:
+            if sample.status:
+                status=3
             pass
         else:
             status = 2
             if sample.status:
-                status=3
+                status=4
                 accFlag = True
                 for order in orders:
                     if order.executed:
-                        status = 4
+                        status = 5
                     else:
                         accFlag = False
                 if status and accFlag:
-                    status = 5
+                    status = 6
     return status
 
 def getOrderStatus(order):
@@ -678,3 +681,84 @@ def list_types(request, samplepk):
     #добавить новый заказ к заказам
     orders = sample.ordersam.all()
     return render(request, 'analyzes/lt.html', {'sample':sample,'atypes':atypes,'orders':orders,'projects':projects,'analysts':analysts,'error':error})
+
+
+def report(request):
+    year = '2018'
+    month='04'
+    orders = Order.objects.filter(dateTime__year=year,dateTime__month=month).order_by('analyst__analyst','executed')
+    #orders = Order.objects.filter(dateTime__year=year,dateTime__month=month)
+    #orders = Order.objects.filter(dateTime__year=year,dateTime__month=month,executed=True)
+
+    print(orders)
+    massiv = {}
+    analysts = {}
+    customers = {}
+    types = {}
+    for order in orders:
+        try:
+            analyst = order.analyst.analyst
+        except Exception as e:
+            analyst  = None
+        if (analyst,order.customer,order.type,order.executed) in massiv:
+            massiv[(analyst,order.customer,order.type,order.executed)] += 1
+        else:
+            analysts[analyst]=True
+            customers[order.customer]=True
+            types[order.type]=True
+            massiv[(analyst,order.customer,order.type,order.executed)] = 1
+    print(analysts)
+    print(customers)
+    print(types)
+    print(massiv)
+    #убрать типы
+    massivWithoutTypes={}
+    for key in massiv:
+        if (key[0],key[1],key[3]) in massivWithoutTypes:
+            massivWithoutTypes[(key[0],key[1],key[3])] += massiv[key]
+        else:
+            massivWithoutTypes[(key[0],key[1],key[3])] = massiv[key]
+    print('massivWithoutTypes')
+    print(massivWithoutTypes)
+    massivWithoutCustomer={}
+    for key in massiv:
+        if (key[0],key[2],key[3]) in massivWithoutCustomer:
+            massivWithoutCustomer[(key[0],key[2],key[3])] += massiv[key]
+        else:
+            massivWithoutCustomer[(key[0],key[2],key[3])] = massiv[key]
+    print('massivWithoutCustomer')
+    print(massivWithoutCustomer)
+
+    massivForHTML = []
+    for key in massivWithoutCustomer:
+        massivForHTML.append({'analyst':key[0],'type':key[1],'exectuted':key[2],
+        'value':massivWithoutCustomer[key]})
+    print('massivForHTML')
+    print(massivForHTML)
+    #analysts = []
+    #counter1 = 0
+    #lastanalyst = None
+    #for order in orders:
+    #    try:
+    #        if order.analyst.analyst not in analysts:
+    #            analysts.append(order.analyst.analyst)
+    #            print (lastanalyst)
+    #            print(counter1)
+    #            lastanalyst = order.analyst.analyst
+    #            counter1 = 1
+    #        else:
+    #            counter1+=1
+    #    except Exception as e:
+    #        pass
+    #    else:
+    #        print("---------")
+    #        print(order)
+    #        print(order.analyst.analyst)
+    #        print("=========")
+    #        pass
+
+    #print (lastanalyst)
+    #print(counter1)
+    #print(analysts)
+
+    return render(request, 'analyzes/report.html', {})

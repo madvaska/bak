@@ -89,7 +89,7 @@ class Order(models.Model):
     comment     = models.TextField(blank=True, verbose_name='Комментарий')
     #флаг что по этому заказу сделан анализ и данные введены
     executed    = models.BooleanField(default=False, verbose_name='Анализ сделан и данные введены')
-
+    executedDateTime = models.DateTimeField(default=None, blank=True, null=True,verbose_name='Дата выполнения')
     class Meta:
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'

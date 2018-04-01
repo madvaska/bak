@@ -40,5 +40,6 @@ urlpatterns = [
     url(r'^s/(?P<page>\d+)?$', views.sample_details, name='samples'),
     url(r'^s/at/(?P<samplepk>\d+)?$', views.list_types, name='list_types'),
     url(r'^s/add', AddSample.as_view(), name='add_sample'),
+    url(r'^report/', views.report, name='reports'),
     #url(r'^soa/(?P<samplepk>\d+)?$', views.list_types, name='list_types'),
 ]
