@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 import datetime
+from django.utils import timezone
 #test
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
@@ -109,9 +110,12 @@ def getOrderStatus(order):
 
 
 def getFormName(POSTDICT, formlist):
+
     for key in POSTDICT:
+        print("Key = %s"%key)
         for key2 in formlist:
-            #print ("POST[%s]=%s : %s"%(key,POSTDICT[key],key2))
+            print("Key2 = %s"%key2)
+            print(formlist[key2])
             if key in formlist[key2]:
                 return (key2,key)
     return None
@@ -140,63 +144,37 @@ def orders(request, page):
 
     error = None
     role = getUserRole(request)
-    if not request.user.is_authenticated:
-        raise PermissionDenied
-        print('неавторизованный')
-        return render(request, 'analyzes/orders.html')
-
-    user = request.user
-    print(user)
-    #TODO
-    #здесь нужно добавить проверку прав пользователя
-    #
-    #
-
-
-    rules={'is_customer':False, 'is_analyst':False,
-    'is_super_analyst':False, 'is_admin':False}
-
-
-    try:
-        customer = Customer.objects.get(person__user = user)
-        rules['is_customer'] = True
-    except :
-        pass
-
-    try:
-        analyst = Analyst.objects.get(person__user__pk = user.pk)
-        rules['is_analyst'] = True
-        if analyst.isHead :
-            rules['is_super_analyst'] = True
-    except:
-        pass
-
-    try:
-        admin = Administrator.objects.get(person__user = user)
-        rules['is_admin'] = True
-    except :
-        pass
-
-    if (rules['is_customer'] or rules['is_analyst'] or rules['is_super_analyst'] or rules['is_admin']):
-        pass
-    else:
-        #TODO Нужно послать на хуй
-        raise Exception('Пошел на фиг.')
-        return render(request, 'analyzes/orders.html' )
-
     analysts = Analyst.objects.all()
-    print('analysts')
-    print(analysts)
+    if role['auth'] == False:
+        error="Необходимо авторизоваться"
+    elif (role['superAnalyst'] is not None) or (role['admin'] is not None):
+        orders = Order.objects.all().order_by('-codeOfSample__dateTime')
+        pass
+    else: # либо аналитик либо заказчик, либо и то и другое
+        if (role['customer'] is not None) and (role['analyst'] is not None):
+            # TODO: order
+            orders1 = Order.objects.filter(customer=role['customer']).order_by('-codeOfSample__dateTime')
+            orders2 = Order.objects.exclude(analyst__isnull=False).filter(analyst__analyst=role['analyst']).order_by('-codeOfSample__dateTime')
+        elif (role['customer'] is not None):
+            orders = Order.objects.filter(customer=role['customer']).order_by('-codeOfSample__dateTime')
+        elif (role['analyst'] is not None):
+            orders = Order.objects.exclude(analyst__isnull=False).filter(analyst__analyst=role['analyst']).order_by('-codeOfSample__dateTime')
+        else:
+            error='Не предвиденный тип пользователя.'
+        pass
+    pass
 
-    print('<!--POST')
-    print(request.POST)
-    print(len(request.POST))
-    print('POST-->')
     if len(request.POST) > 0 : #Обработаем форзвращенные значения формы
+        typeselected = ""
+        customerselected = ''
+        projectselected = ''
         #0. Зададим список форм которые мы обрабатываем в этой функции
-        formlist = {'newOrder':('newOrder'),'filter':('filterOk','filterOff'),
-        'setAnalyst':('setAnalyst'),}
+        formlist = {'newOrder':{'newOrder':'newOrder'},
+        'filter':{'filterOn':'filterOn','filterOff':'filterOff'},
+        'setAnalyst':{'setAnalyst':'setAnalyst'},
+        'orderexecute':{'orderexecute':'orderexecute'},}
         #1. Определим данные какой формы пришли
+        print(orders)
         formName = getFormName(request.POST, formlist)
         print(formName)
         #1.1 Если не смогли определить форму, то сохраним ошибку
@@ -206,6 +184,8 @@ def orders(request, page):
         #1.2 Если смогли то продолжим обработку
         #2. Проверим имеет ли пользователь право работать с этой формой
         #2.1. Если нет, то формируем ошибку и покажем это на странице
+        print(formName[0])
+
         if formName[0] == 'newOrder':
             if role['customer'] is None:
                 error="Новый заказ может сделать только заказчик"
@@ -215,8 +195,13 @@ def orders(request, page):
         elif formName[0] == 'setAnalyst':
             if role['superAnalyst'] is None:
                 error="Только суперАналитик может назначать измерителей"
+        elif formName[0] == 'orderexecute':
+            if role['superAnalyst'] or role['analyst']:
+                pass
+            else:
+                error = "Только измеритель или руководитель проставлять информацию об исполнени"
         else:
-            error="Форма не опознана"
+            error="Форма не опознана. Обратитесь к разработчику."
         #2.2. Если да, то продолжим
         #3. Определим что форма заполнена корректно
         #3.1. Проверим существуют ли объекты указанные в данных
@@ -225,12 +210,23 @@ def orders(request, page):
             pass
         elif formName[0] == 'filter':
             # TODO:
-            pass
+            try:
+                selectedCustomer = None
+                selectedType = None
+                selectedProject = None
+                customerpk = int(request.POST.get('customer',default=None))
+                if (customerpk is not None) and (customerpk != 0):
+                    selectedCustomer = Customer.objects.get(pk=customerpk)
+                typepk = int(request.POST.get('type',default=None))
+                if (typepk is not None) and (typepk != 0):
+                    selectedType = AnalyzeType.objects.get(pk=typepk)
+                projectpk = int(request.POST.get('project',default=None))
+                if (projectpk is not None) and (projectpk != 0):
+                    selectedProject = Project.objects.get(pk=projectpk)
+            except Exception as e:
+                error="Не найдены указанные объекты"
         elif formName[0] == 'setAnalyst':
             try:
-                print('analystpk')
-                print
-
                 analyst = Analyst.objects.get(pk=request.POST.get('selectAnalystpk',default=None))
             except Exception as e:
                 error="Введен несуществующий измеритель"
@@ -241,6 +237,17 @@ def orders(request, page):
             else:
                 pass
             pass
+        elif formName[0] == 'orderexecute':
+            try:
+                orderpk =int(request.POST.get('orderpk',default=None))
+                if orderpk>0:
+                    order = Order.objects.get(pk=orderpk)
+                print("order-1")
+                print(order)
+                print(order.executed)
+                print(order.executedDateTime)
+            except Exception as e:
+                error="Что то пошло не так"
         #3.2. Проверим имеет ли пользователь право выполнять требуемые  операции
         # с указанными объектами
         # TODO:
@@ -259,6 +266,18 @@ def orders(request, page):
             if order.executed:
                 error="Заказ уже выполнен"
             pass
+        elif formName[0] == 'orderexecute':
+            print("order0")
+            print(order)
+            print(order.executed)
+            print(order.executedDateTime)
+            if role['analyst'] and not error:
+                try:
+                    analyst = order.analyst.analyst
+                    if analyst != role['analyst']:
+                        error = "Нельзя закрывать не свои заказы."
+                except Exception as e:
+                    error = "Не назначенного измерителя "+str(e)
         #3.3. Если некоректно то сохраним ошибку и покажем её на странице
         # TODO:
         #3.4. Если корректно то продолжим
@@ -269,7 +288,15 @@ def orders(request, page):
             pass
         elif formName[0] == 'filter':
             # TODO:
-            pass
+            if selectedCustomer is not None:
+                orders = orders.filter(customer = selectedCustomer)
+                customerselected = selectedCustomer.pk
+            if selectedType is not None:
+                orders = orders.filter(type = selectedType)
+                typeselected = selectedType.pk
+            if selectedProject is not None:
+                orders = orders.filter(project = selectedProject)
+                projectselected = selectedProject.pk
         elif formName[0] == 'setAnalyst':
             try:
                 print(order)
@@ -277,83 +304,63 @@ def orders(request, page):
                 SetAnalyst.objects.create(order=order,analyst=analyst,assignBy=role['superAnalyst'].person)
                 email = analyst.person.user.email
                 if email is not None:
-                    send_mail('Subject here2', 'Here is the message2.', 'admin@catalyst.su',
+                    send_mail('Вам назначен заказ '+order.code, 'Номер образца '+str(order.codeOfSample)+', тип анализа: '+ str(order.type), 'admin@catalyst.su',
                     [email], fail_silently=False)
             except Exception as e:
-                raise
+                error = "Произошла ошибка. "+str(e)
             else:
                 pass
             pass
-        if error is not None:
-            print("error = %s"%error)
+        elif formName[0] == 'orderexecute':
+            print(error)
+            print(not error)
+            if not error:
+                order.executed = True
+                order.executedDateTime = timezone.now()
+                order.save()
+                raise
+                print("order")
+                print(order)
+                print(order.executed)
+                print(order.executedDateTime)
+
+
         #4.1 Если данные не удалось обработать, то сохраняем ошибку
         # и покажем её на странице
+        if error is not None:
+            print("error = %s"%error)
+            return render(request, 'analyzes/error.html', {'error':error})
         #4.2 Если данные успешно обработаны, то продолжим отрисовку страницы
+
     else: #Нет данных посланных пост. необходимо начальное заполнение
+        typeselected = ""
+        customerselected = ''
+        projectselected = ''
+        if role['auth'] == False:
+            error="Необходимо авторизоваться"
+        elif (role['superAnalyst'] is not None) or (role['admin'] is not None):
+            orders = Order.objects.all().order_by('-codeOfSample__dateTime')
+            pass
+        else: # либо аналитик либо заказчик, либо и то и другое
+            if (role['customer'] is not None) and (role['analyst'] is not None):
+                # TODO: order
+                orders1 = Order.objects.filter(customer=role['customer']).order_by('-codeOfSample__dateTime')
+                orders2 = Order.objects.exclude(analyst__isnull=False).filter(analyst__analyst=role['analyst']).order_by('-codeOfSample__dateTime')
+
+            elif (role['customer'] is not None):
+                orders = Order.objects.filter(customer=role['customer']).order_by('-codeOfSample__dateTime')
+            elif (role['analyst'] is not None):
+                orders = Order.objects.exclude(analyst__isnull=False).filter(analyst__analyst=role['analyst']).order_by('-codeOfSample__dateTime')
+            else:
+                error='Не предвиденный тип пользователя.'
+            pass
         pass
+
     types = AnalyzeType.objects.all().order_by('code')
     projects = Project.objects.all().order_by('name')
-    print('trace1')
-    if (rules['is_admin'] or rules['is_super_analyst']):
-        print('trace2.1')
-        customers = Customer.objects.all().order_by('person__user__last_name')
-    elif (rules['is_customer']):
-        print('trace2.2')
-        customers = Customer.objects.filter(person__user = user).order_by('person__user__last_name')
-    else:
-        print('trace2.3')
-        customers = Customer.objects.filter(person__user = user).order_by('person__user__last_name')
+    customers = Customer.objects.all().order_by('person__user__last_name')
 
-    typeselected = ""
-    customerselected = ''
-    projectselected = ''
 
-    if request.POST.get('but1', default=None) is None:
-        if (rules['is_admin'] or rules['is_super_analyst']):
-            orders = Order.objects.all().order_by('-dateTime')
-        elif (rules['is_customer']):
-            orders = Order.objects.filter(customer__person__user = user).order_by('-dateTime')
-    else:
-        str1 = ''
-        if (rules['is_admin'] or rules['is_super_analyst']):
-            orders = Order.objects.all().order_by('-dateTime')
-        elif (rules['is_customer']):
-            orders = Order.objects.filter(customer__person__user = user).order_by('-dateTime')
-
-        typeselected = request.POST.get('type', default=None)
-        if typeselected is None:
-            pass
-        else:
-            typeselected = int(typeselected)
-            if typeselected != 0:
-                print('typeselected')
-                print(typeselected)
-                orders = orders.filter(type__pk=typeselected)
-        customerselected = request.POST.get('customer', default=None)
-        if customerselected is None:
-            pass
-        else:
-            customerselected = int(customerselected)
-            if customerselected != 0:
-                orders = orders.filter(customer__pk=customerselected)
-
-        projectselected = request.POST.get('project', default=None)
-        if projectselected is None:
-            pass
-        else:
-            projectselected = int(projectselected)
-            if projectselected != 0:
-                orders = orders.filter(project__pk=projectselected)
-            pass
-        if request.POST.get('executed', default=None) is None:
-            pass
-
-    if typeselected is None:
-        typeselected = ''
-    if customerselected is None:
-        customerselected = ''
-    if projectselected is None:
-        projectselected = ''
     #print("dd="+customerselected)
     orders = Paginator(orders,30)
     if page is None:
@@ -567,11 +574,15 @@ def sample_details(request, page):
     role = getUserRole(request)
     print(request.POST)
     if role['superAnalyst']:
-        samples = Sample.objects.all().prefetch_related('ordersam').order_by("dateTime")
         samplepk = request.POST.get('samplepk',default=None)
         analystpk = request.POST.get('analystpk',default=None)
-        print("samplepk")
-        print(samplepk)
+        setstatus = request.POST.get('setstatus',default=None)
+        #print("samplepk")
+        #print(samplepk)
+        if setstatus:
+            sample = Sample.objects.prefetch_related('ordersam').get(pk=int(samplepk))
+            sample.status = True;
+            sample.save()
         if samplepk is None:
             pass
         else:
@@ -592,6 +603,7 @@ def sample_details(request, page):
                     except Exception as e:
                         print("нет")
                         SetAnalyst.objects.create(order=order,analyst=analyst,assignBy=role['analyst'].person)
+        samples = Sample.objects.all().prefetch_related('ordersam').order_by("-dateTime")
 
     #Аналитик
     elif role['analyst']:
@@ -602,7 +614,7 @@ def sample_details(request, page):
                 samples.append(order.codeOfSample)
     #Заказчик
     elif role['customer']:
-        samples = Sample.objects.filter(customer=role['customer']).prefetch_related('ordersam').order_by("dateTime")
+        samples = Sample.objects.filter(customer=role['customer']).prefetch_related('ordersam').order_by("-dateTime")
     else:
         samples = []
         pass

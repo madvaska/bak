@@ -1,11 +1,23 @@
 {% extends "index.html" %}
 {% block left_menu %}
+<script type="text/javascript">
+    $(document).ready( function() {
+      $('#neworder').hide();
+      $('#filter').show();
+      $('#analyst').hide();
+    });
+</script>
+<!--
+-->
+<div  id="neworder">
 <p>
   <form class="filter" action="/a/o/add/" method="get">
     <input type="submit" name="newOrder" value="Новый заказ">
   </form>
 </p>
+</div>
 
+<div id='filter'>
 <form class="filter" action="" method="post" >
   {% csrf_token %}
   <fieldset>
@@ -51,20 +63,29 @@
   <input class="mbutton" type="submit" name="filterOff" value="Отключить отбор">
 </fieldset>
 </form>
+</div>
 
-<div id="analyst">
-  <form class="" action="" method="post">
+<div id="analyst" height="100" >
+  <br />
+  <h4>Выберите измерителя для заказа <div id="ordername">
+
+  </div></h4>
+  <form class="" action="" method="post" >
     {% csrf_token %}
-    <input  id='orderpk' type="text" name="orderpk" value="">
-    <select id="selectAnalystpk" name="selectAnalystpk">
+    <input  type="hidden" id='orderpk'  name="orderpk" value="">
+    <!--<input  id='ordername' type="text" name="ordername" value="">-->
+    <br />
+    <select id="selectAnalystpk" name="selectAnalystpk" >
       <option value="0">выберите измерителя</option>
       {% for analyst in analysts %}
         <option value={{analyst.pk}}>{{analyst}}</option>
       {% endfor %}
-
     </select>
-    <input type="submit" name="setAnalyst" value="setAnalyst">
+    <br />
+    <br />
+    <input type="submit" id="setAnalystSubmit" name="setAnalyst" value="Назначить исполнителя">
   </form>
+  <br />
 
 </div>
 {% endblock %}
@@ -101,31 +122,41 @@
         <script type="text/javascript">
           function selectAnalyst(event){
             var myId = "#" + event.target.id
-            alert('Вы кликнули по кнопке, с id ' + event.target.id);
-            alert(event.target.parentNode.parentNode);
-            alert(myId);
-            alert( $(myId).parents('tr').html());
+            $('#neworder').hide();
+            $('#filter').hide();
+            //alert('Вы кликнули по кнопке, с id ' + event.target.id);
             $('#orderpk').attr("value",myId.substring(6))
-            $(myId).parents('tr').css('background-color','#f72407')
+            $(myId).parents('tr').css('background-color','#03dbce');
+            $('#analyst').css('background-color','#03dbce');
+            $('#analyst').css('bli','#03dbce');
+            $('#setAnalystSubmit').css('text-align','center');
+            $('#analyst').show();
           }
         </script>
-        {% if order.analyst %}{{order.analyst}}
+        {% if order.analyst %}
+          {{order.analyst}}
         {% else %}
-        <button id="order{{order.pk}}" onclick="selectAnalyst(event)">
-          <span class="glyphicon glyphicon-plus"></span>
-        </button>
+          <button id="order{{order.pk}}" onclick="selectAnalyst(event)"
+          title="Выбрать измерителя">
+            <span class="glyphicon glyphicon-plus"></span>
+          </button>
         {% endif %}
       </td>
       <td>{{order.comment}}</td>
       <td>
         {% if order.executed %}
-        <a href="#">
           <span class="glyphicon glyphicon-ok-circle"></span>
-        </a>
+          {{order.executedDateTime}}
         {% else %}
-        <a href="/a/a/add/{{order.code}}">
-          <span class="glyphicon glyphicon-plus"></span>
-        </a>
+          {% if  order.analyst  %}
+            <form id="fexec{{order.pk}}" action="" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="orderpk" value={{order.pk}}>
+              <input type="submit" name="orderexecute" value="Отметка о выполнении">
+            </form>
+          {% else %}
+
+          {% endif %}
         {% endif %}
       </td>
       <td>

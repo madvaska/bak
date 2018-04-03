@@ -13,6 +13,11 @@
   </form>
 </div>
 -->
+<br />
+<form action={% url "add_sample"%}>
+  {% csrf_token %}
+  <input type="submit" name="" value="Добавить новый образец">
+</form>
 {% endblock %}
 
 {% block content %}
@@ -43,6 +48,9 @@
     {% if role.superAnalyst %}
       <td>Исполнитель</td>
     {% endif %}
+    {% if role.customer %}
+      <td>Добавить метод</td>
+    {% endif %}
     {% if role.analyst %}
       <td>Получен</td>
     {% endif %}
@@ -50,21 +58,31 @@
   </tr>
   {% for sample in samples %}
   <tr>
-    <td>
-      {% if role.customer and sample.fullStatus < 2 %}
-        <a href={% url "list_types" %}{{sample.pk}} >{{sample}}</a></td>
+    <td  title={{sample.comment}}>
+      {% if role.customer and sample.fullStatus < 3 %}
+        <!--<a href={% url "list_types" %}{{sample.pk}} title={{sample.comment}}>{{sample}}</a></td>-->
+         {{sample}}
       {% else %}
-        {{sample}}
+        <div title={{sample.comment}}>
+          {{sample}}
+        </div>
       {% endif %}
+      </td>
     <td>
       {% for ats in sample.atype  %}
         {{ats.type.code}}:{{ats.analyst}},
       {% endfor %}
+      {% if sample.fullStatus >= 0 or sample.fullStatus < 3  %}
+        <a href={% url "list_types" %}{{sample.pk}} title="Добавить метод(ы)">
+          , <span class="glyphicon glyphicon-plus"></span>
+        </a>
+      {% endif %}
+    </td>
       {% if role.superAnalyst %}
         {% if sample.fullStatus < 1  %}
           <td></td>
         {% else %}
-          {% if sample.fullStatus < 3 %}
+          {% if sample.fullStatus < 2 %}
             <script type="text/javascript">
               $(document).ready(function() {
                 $("#s{{sample.pk}}").click(function(){
@@ -75,14 +93,38 @@
                 })
             })
               </script>
-              <td><button type="button" id="s{{sample.pk}}" name="button">+</button></td>
+              <td><button type="button" id="s{{sample.pk}}" name="button"
+                title="Назначить исполнителя для ВСЕХ неназначенных методов!">
+                <span class="glyphicon glyphicon-plus"  ></span>
+                </button></td>
           {% else %}
-              <td>Образец получен</td>
+              <td></td>
           {% endif %}
         {% endif %}
       {% endif %}
-      {% if role.analyst %}
-      <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
+      {% if role.customer %}
+        {% if sample.fullStatus < 3  %}
+          <td><a href={% url "list_types" %}{{sample.pk}} >
+            <span class="glyphicon glyphicon-plus" title="Добавить метод(ы)"></span>
+            </td>
+        {% else %}
+          <td></td>
+        {% endif %}
+      {% endif %}
+      {% if sample.status %}
+            <td>Получен</td>
+      {% else %}
+        {% if role.analyst or role.superAnalyst %}
+          <td>
+            <form class="" action="" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="samplepk" value={{sample.pk}}>
+              <input type="submit" name="setstatus" value="Отметить получение" title="Внимание! После получения нельзя добавлять методы!">
+            </form>
+          </td>
+          {% else %}
+            <td>Не получен</td>
+        {% endif %}
       {% endif %}
   {% endfor %}
 
