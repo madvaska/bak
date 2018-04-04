@@ -595,6 +595,7 @@ def sample_details(request, page):
         if samplepk is None:
             pass
         else:
+
             try:
                 analyst = Analyst.objects.get(pk=int(analystpk))
             except Exception as e:
@@ -644,9 +645,10 @@ def sample_details(request, page):
         sample.fullStatus = getSampleStatus(sample)
     atypes = AnalyzeType.objects.all()
     customers = Customer.objects.all()
+    analysts = Analyst.objects.all()
 
     return render(request, 'analyzes/samples.html', {'page':page,
-    'samples':samples,'atypes':atypes,'role':role, 'customers':customers})
+    'samples':samples,'atypes':atypes,'role':role, 'customers':customers,'analysts':analysts})
 
 
 #===============================================================================
@@ -760,23 +762,23 @@ def report(request):
             massivWithoutTypes[(key[0],key[1],key[3])] += massiv[key]
         else:
             massivWithoutTypes[(key[0],key[1],key[3])] = massiv[key]
-    print('massivWithoutTypes')
-    print(massivWithoutTypes)
+    #print('massivWithoutTypes')
+    #print(massivWithoutTypes)
     massivWithoutCustomer={}
     for key in massiv:
         if (key[0],key[2],key[3]) in massivWithoutCustomer:
             massivWithoutCustomer[(key[0],key[2],key[3])] += massiv[key]
         else:
             massivWithoutCustomer[(key[0],key[2],key[3])] = massiv[key]
-    print('massivWithoutCustomer')
-    print(massivWithoutCustomer)
+    #print('massivWithoutCustomer')
+    #print(massivWithoutCustomer)
 
     massivForHTML = []
     for key in massivWithoutCustomer:
         massivForHTML.append({'analyst':key[0],'type':key[1],'exectuted':key[2],
         'value':massivWithoutCustomer[key]})
-    print('massivForHTML')
-    print(massivForHTML)
+    #print('massivForHTML')
+    #print(massivForHTML)
     #analysts = []
     #counter1 = 0
     #lastanalyst = None
@@ -802,5 +804,34 @@ def report(request):
     #print (lastanalyst)
     #print(counter1)
     #print(analysts)
-
-    return render(request, 'analyzes/report.html', {})
+    reportName = "Имя отчета"
+    table={}
+    table['headers']=[]
+    table['rows']=[]
+    table['tails']=[]
+    if len(request.POST):
+        if request.POST.get('formsubmit', default=None):
+            if request.POST.get('reporttype', default=None) == "1":
+                analysts = []
+                types = []
+                for key in massivWithoutCustomer:
+                    if key[2]:
+                        if key[0] not in analysts:
+                            analysts.append(key[0])
+                        if key[1] not in types:
+                            types.append(key[1])
+                table['headers'].append({'name':"Метод\Измеритель"})
+                for analyst in analysts:
+                    table['headers'].append({'name':str(analyst)})
+                for type1 in types:
+                    tablerow = []
+                    tablerow.append(str(type1))
+                    for analyst in analysts:
+                        try:
+                            tablerow.append(massivWithoutCustomer[(analyst,type1,True)])
+                        except Exception as e:
+                            tablerow.append(0)
+                    print(tablerow)
+                    table['rows'].append(tablerow)
+    print(table)
+    return render(request, 'analyzes/report.html', {'reportName':reportName,'table':table})

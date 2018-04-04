@@ -38,6 +38,28 @@
 {% endblock %}
 
 {% block content %}
-<h2>Отчет</h2>
+<h3>Отчет <br />
+  {{reportName}}
+</h3>
 
+<table>
+<tr>
+{% for head in table.headers %}
+<td> {{head.name}}</td>
+{% endfor %}
+</tr>
+{% for row in table.rows %}
+<tr>
+  {% for cell  in row %}
+    <td>{{cell}}</td>
+  {% endfor %}
+</tr>
+{% endfor %}
+<tr>
+
+{% for tail in table.tails %}
+<td> {{table.tails.name}}</td>
+{% endfor %}
+</tr>
+</table>
 {% endblock %}

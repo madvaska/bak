@@ -19,8 +19,8 @@
   <input type="hidden" id="spk" name="samplepk" value="">
   <select class="asel1" name="analystpk">
     <option value="0"}>Выберите Измерителя</option>
-    {% for customer in customers %}
-      <option value={{customer.pk}}>{{customer}}</option>
+    {% for analyst in analysts %}
+      <option value={{analyst.pk}}>{{analyst}}</option>
     {% endfor %}
   </select>
   <input type="submit" id="submit1" name="submit" value="Назначить">
