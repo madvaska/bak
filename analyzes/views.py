@@ -20,6 +20,10 @@ from reportlab.pdfgen import canvas
 from django.http import HttpResponse
 
 
+#===============================================================================
+#
+#
+#===============================================================================
 def getNewCodeOrder():
     now = datetime.datetime.now()
     if now.month <10:
@@ -36,9 +40,12 @@ def getNewCodeOrder():
     if ocode.code < str1 + "0001":
         ocode.code = str1 + "0001"
         ocode.save()
-
     return(ocode.code)
 
+#===============================================================================
+#
+#
+#===============================================================================
 def getUserRole(request):
     auth = False
     customer = None
@@ -62,8 +69,12 @@ def getUserRole(request):
             admin = Administrator.objects.get(person__user = user)
         except Exception as e:
             pass
-        return({'user':user,'auth':auth,'customer':customer,'analyst':analyst,'superAnalyst':superAnalyst,'admin':admin})
+    return({'user':user,'auth':auth,'customer':customer,'analyst':analyst,'superAnalyst':superAnalyst,'admin':admin})
 
+#===============================================================================
+#
+#
+#===============================================================================
 def getSampleStatus(sample):
     status = 0
     #Статусы
@@ -105,10 +116,18 @@ def getSampleStatus(sample):
                     status = 6
     return status
 
+#===============================================================================
+#
+#
+#===============================================================================
 def getOrderStatus(order):
     return None
 
 
+#===============================================================================
+#
+#
+#===============================================================================
 def getFormName(POSTDICT, formlist):
 
     for key in POSTDICT:
@@ -121,27 +140,11 @@ def getFormName(POSTDICT, formlist):
     return None
 
 
+#===============================================================================
+#
+#
+#===============================================================================
 def orders(request, page):
-
-##
-    # Create the HttpResponse object with the appropriate PDF headers.
-    #response = HttpResponse(content_type='application/pdf')
-    #response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
-
-    # Create the PDF object, using the response object as its "file."
-    #p = canvas.Canvas(response)
-
-    # Draw things on the PDF. Here's where the PDF generation happens.
-    # See the ReportLab documentation for the full list of functionality.
-    #p.drawString(100, 100, "Hello world.")
-
-    # Close the PDF object cleanly, and we're done.
-    #p.showPage()
-    #p.save()
-    #return response
-
-##
-
     error = None
     role = getUserRole(request)
     analysts = Analyst.objects.all()
@@ -163,6 +166,8 @@ def orders(request, page):
             error='Не предвиденный тип пользователя.'
         pass
     pass
+    if error is not None:
+        return render(request, 'analyzes/error.html', {'error':error})
 
     if len(request.POST) > 0 : #Обработаем форзвращенные значения формы
         typeselected = ""
@@ -174,9 +179,7 @@ def orders(request, page):
         'setAnalyst':{'setAnalyst':'setAnalyst'},
         'orderexecute':{'orderexecute':'orderexecute'},}
         #1. Определим данные какой формы пришли
-        print(orders)
         formName = getFormName(request.POST, formlist)
-        print(formName)
         #1.1 Если не смогли определить форму, то сохраним ошибку
         # и покажем её на странице
         if formName is None:
@@ -184,7 +187,6 @@ def orders(request, page):
         #1.2 Если смогли то продолжим обработку
         #2. Проверим имеет ли пользователь право работать с этой формой
         #2.1. Если нет, то формируем ошибку и покажем это на странице
-        print(formName[0])
 
         if formName[0] == 'newOrder':
             if role['customer'] is None:
@@ -242,10 +244,6 @@ def orders(request, page):
                 orderpk =int(request.POST.get('orderpk',default=None))
                 if orderpk>0:
                     order = Order.objects.get(pk=orderpk)
-                print("order-1")
-                print(order)
-                print(order.executed)
-                print(order.executedDateTime)
             except Exception as e:
                 error="Что то пошло не так"
         #3.2. Проверим имеет ли пользователь право выполнять требуемые  операции
@@ -267,10 +265,6 @@ def orders(request, page):
                 error="Заказ уже выполнен"
             pass
         elif formName[0] == 'orderexecute':
-            print("order0")
-            print(order)
-            print(order.executed)
-            print(order.executedDateTime)
             if role['analyst'] and not error:
                 try:
                     analyst = order.analyst.analyst
@@ -299,8 +293,6 @@ def orders(request, page):
                 projectselected = selectedProject.pk
         elif formName[0] == 'setAnalyst':
             try:
-                print(order)
-                print(analyst)
                 SetAnalyst.objects.create(order=order,analyst=analyst,assignBy=role['superAnalyst'].person)
                 email = analyst.person.user.email
                 if email is not None:
@@ -312,17 +304,10 @@ def orders(request, page):
                 pass
             pass
         elif formName[0] == 'orderexecute':
-            print(error)
-            print(not error)
             if not error:
                 order.executed = True
                 order.executedDateTime = timezone.now()
                 order.save()
-                raise
-                print("order")
-                print(order)
-                print(order.executed)
-                print(order.executedDateTime)
 
 
         #4.1 Если данные не удалось обработать, то сохраняем ошибку
@@ -371,19 +356,19 @@ def orders(request, page):
         orders = orders.page(page_num)
     except EmptyPage:
         orders = orders.page(1)
-    for elem in orders:
-        try:
-            analyze = Analyze.objects.get(order=elem)
-            if elem.executed:
-                pass
-            else:
-                elem.executed = True
-                elem.save()
-        except :
-            analyze=None
-            if elem.executed:
-                elem.executed = False
-                elem.save()
+    #for elem in orders:
+    #    try:
+    #        analyze = Analyze.objects.get(order=elem)
+    #        if elem.executed:
+    #            pass
+    #        else:
+    #            elem.executed = True
+    #            elem.save()
+    #    except :
+    #        analyze=None
+    #        if elem.executed:
+    #            elem.executed = False
+    #            elem.save()
 
 
     print(orders.paginator.num_pages)
@@ -391,6 +376,10 @@ def orders(request, page):
     'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected,
     'analysts':analysts})
 
+#===============================================================================
+#
+#
+#===============================================================================
 def order_details(request,id):
     if id is None:
         id = 1
@@ -420,16 +409,28 @@ def order_details(request,id):
         pass
     return render(request, 'analyzes/order_details.html', {'elem':elem, 'analyze':analyze})
 
+#===============================================================================
+#
+#
+#===============================================================================
 def analyzeTypes(request):
     types = AnalyzeType.objects.all()
     #print(emps)
     return render(request, 'analyzes/analyzetypes.html', {'analyzetypes':types})
 
+#===============================================================================
+#
+#
+#===============================================================================
 def projects(request):
     projects = Project.objects.all()
     #print(emps)
     return render(request, 'analyzes/projects.html', {'projects':projects})
 
+#===============================================================================
+#
+#
+#===============================================================================
 def analyzes(request):
     if not request.user.is_authenticated:
         raise PermissionDenied
@@ -439,6 +440,10 @@ def analyzes(request):
     #print(emps)
     return render(request, 'analyzes/analyzes.html', {'analyzes':analyzes})
 
+#===============================================================================
+#
+#
+#===============================================================================
 def analyze_details(request,id):
     analyze = Analyze.objects.get(pk=id)
     print(analyze)
@@ -581,8 +586,12 @@ def sample_details(request, page):
         #print(samplepk)
         if setstatus:
             sample = Sample.objects.prefetch_related('ordersam').get(pk=int(samplepk))
-            sample.status = True;
-            sample.save()
+            if getSampleStatus(sample) ==2:
+                sample.status = True;
+                sample.save()
+            else:
+                error = "Нельзя получать образец до добавления методов и назначения измерителей."
+                return render(request, 'analyzes/error.html', {'error':error})
         if samplepk is None:
             pass
         else:
@@ -593,15 +602,11 @@ def sample_details(request, page):
             else:
                 sample = Sample.objects.prefetch_related('ordersam').get(pk=int(samplepk))
                 orders = sample.ordersam.all()
-                print("orders")
-                print(orders)
                 for order in orders:
                     try:
                         setAnalyst=order.analyst
-                        print(setAnalyst)
                         pass
                     except Exception as e:
-                        print("нет")
                         SetAnalyst.objects.create(order=order,analyst=analyst,assignBy=role['analyst'].person)
         samples = Sample.objects.all().prefetch_related('ordersam').order_by("-dateTime")
 

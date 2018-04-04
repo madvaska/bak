@@ -3,10 +3,11 @@
 {% endblock %}
 
 {% block content %}
+
 <h4>Добавление НОВОГО образца</h4>
 <form class="" method="post">
   {% csrf_token %}
   {{form.as_p}}
-  <input type="submit" name="" value="Добавить образец">
+  <input type="submit" name="addsample" value="Добавить образец">
 </form>
 {% endblock %}

@@ -1,150 +1,43 @@
 {% extends "index.html" %}
 {% block left_menu %}
-<!--
-<div width = 90 >
-  <form  action="" method="post">
-    <select multiple  name="types" style="width: 90%">
-      <option disabled value=0>Виды анализов</option>
-      {% for type in atypes %}
-        <option value={{type.id}}>{{type}}</option>
-      {% endfor %}
-    </select>
-    <input type="submit" name="" value="Выбрать">
-  </form>
-</div>
--->
+<style >
+  select{
+    width:100%;
+  }
+</style>
+Отчеты:
+<form class="" action="" method="post">
+  {% csrf_token %}
+  <select class="" name="reporttype">
+    <option value="0">Выберите вид отчета</option>
+    <option value="1">по выполненным заказам в разрезе методов</option>
+    <option value="2">по выполненным заказам в разрезе заказчиков</option>
+    <option value="3">Статистика выполнения</option>
+  </select>
+  <br />
+  Период отчета:
+  <select class="" name="reportdates">
+    <option value="0">Месяц</option>
+    <option value="1">Январь</option>
+    <option value="2">Февраль</option>
+    <option value="3">Март</option>
+    <option value="4">Апрель</option>
+    <option value="5">Май</option>
+    <option value="6">Июнь</option>
+    <option value="7">Июль</option>
+    <option value="8">Август</option>
+    <option value="9">Сентябрь</option>
+    <option value="10">Октябрь</option>
+    <option value="11">Ноябрь</option>
+    <option value="12">Декабрь</option>
+  </select>
+  <br />
+  <input type="submit" name="formsubmit" value="Сформировать">
+</form>
+
 {% endblock %}
 
 {% block content %}
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#fform1').hide();
-})
-</script>
-<!--
-<div id="win">
-   <div class="overlay"></div>
-      <div class="visible">
-        <h2>Заголовок окна</h2>
-          <div class="content">
-            <p>Содержание</p>
-            <p>Модальное окно фиксированной ширины</p>
-          </div>
-        <button type="button" onClick="$('#win').hide();">закрыть</button>
-    </div>
-</div>
--->
-<div id="tblo">
-<h4>Таблица образцов</h4>
-<table>
-  <tr>
-    <td>Код образца</td>
-    <td>Виды анализов</td>
-    {% if role.superAnalyst %}
-      <td>Исполнитель</td>
-    {% endif %}
-    {% if role.analyst %}
-      <td>Получен</td>
-    {% endif %}
+<h2>Отчет</h2>
 
-  </tr>
-  {% for sample in samples %}
-  <tr>
-    <td>
-      {% if role.customer and sample.fullStatus < 2 %}
-        <a href={% url "list_types" %}{{sample.pk}} >{{sample}}</a></td>
-      {% else %}
-        {{sample}}
-      {% endif %}
-    <td>
-      {% for ats in sample.atype  %}
-        {{ats.type.code}}:{{ats.analyst}},
-      {% endfor %}
-      {% if role.superAnalyst %}
-        {% if sample.fullStatus < 1  %}
-          <td></td>
-        {% else %}
-          {% if sample.fullStatus < 3 %}
-            <script type="text/javascript">
-              $(document).ready(function() {
-                $("#s{{sample.pk}}").click(function(){
-                    $("#dsample").html("{{sample}}");
-                    $("#spk").attr("value","{{sample.pk}}");
-                    $('#tblo').hide()
-                    $('#fform1').show();
-                })
-            })
-              </script>
-              <td><button type="button" id="s{{sample.pk}}" name="button">+</button></td>
-          {% else %}
-              <td>Образец получен</td>
-          {% endif %}
-        {% endif %}
-      {% endif %}
-      {% if role.analyst %}
-      <td><a target="_blank" href={% url "list_types" %}{{sample.pk}} >+</td>
-      {% endif %}
-  {% endfor %}
-
-</table>
-{% if samples.paginator.num_pages > 1 %}
-
-<div id="pagination">
-  {% if samples.has_previous %}
-    <div id="previous-page">
-      <a href={% url "samples"%}{{ samples.previous_page_number }} >
-      &lt</a>
-    </div>
-  {% endif %}
-{% if samples.has_next %}
-  <div id="next-page">
-    <a href={% url "samples" %}{{samples.next_page_number}}>&gt</a>
-  </div>
-{% endif %}
-</div>
-<div id="num-pages">
-{% for pn in samples.paginator.page_range  %}
-  {% if not forloop.first %}
-    &nbsp;&nbsp;|&nbsp;&nbsp;
-  {% endif %}
-  {% if samples.number != pn %}
-    <a href={% url "samples" %}{{pn}}>
-  {% endif %}
-  {{pn}}
-  {% if samples.number != pn %}
-    </a>
-  {% endif %}
-{% endfor %}
-
-    </div>
-{% endif %}
-
-
-</div>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $("#submit1").click(function(){
-        $('#fform1').hide();
-        $('#tblo').show()
-    })
-})
-</script>
-<div id="fform1">
-<br />
-<h4> Назначить одного исполнителя для испытания образца <div id="dsample">
-
-</div> (для всех методов)</h4>
-<form id="analyst1" class="analyst1" action="" method="post">
-  {% csrf_token %}
-  <input type="text" id="spk" name="samplepk" value="">
-  <select class="asel1" name="analystpk">
-    <option value="0"}>---------------</option>
-    {% for customer in customers %}
-      <option value={{customer.pk}}>{{customer}}</option>
-    {% endfor %}
-  </select>
-  <input type="submit" id="submit1" name="submit" value="Назначить">
-</form>
-</div>
 {% endblock %}

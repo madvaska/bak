@@ -1,22 +1,10 @@
 {% extends "index.html" %}
 {% block left_menu %}
-{% endblock %}
-
-{% block content %}
-<script type="text/javascript">
-  $(document).ready(function() {
-    $("#envelope").hide();
-    $('#tblo').show();
-    $("#btblo").click(function(){
-      $('#tblo').hide();
-      $("#envelope").show();
-    })
-})
-
-</script>
-{% if error %}
-
-{% else %}
+<style>
+select {
+width: 100%; /* Ширина списка в пикселах */
+}
+</style>
   <div id="envelope" class="envelope">
   <h4 class="title">Добавьте виды анализов для образца {{sample}} и укажите проект</h4>
   <form method="post" action="">
@@ -34,7 +22,20 @@
   <input type="submit" name="send" value="Добавить" class="send-message">
   </form>
   </div>
-{% endif %}
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#envelope").hide();
+    $("#btblo").show();
+  //$('#tblo').show();
+    $("#btblo").click(function(){
+      $('#btblo').hide();
+      $("#envelope").show();
+    })
+})
+</script>
 
 <div id="fade" class="black-overlay"></div>
 
@@ -45,33 +46,37 @@
   <tr>
     <td>Анализы</td>
     <td>Дата заказа</td>
+    <!--
     <td>Статус</td>
+    -->
   </tr>
   {% for order in orders %}
   <tr>
     <td>{{order.type}}</td>
     <td>{{order.dateTime}}</td>
+    <!--
     <td>
       {% if sample.status or order.executed %}
-      нет
       {% else %}
-      редактировать/удалить
       {% endif %}
     </td>
+    -->
   </tr>
   {% endfor %}
   <tr>
-    <td>
-{% if error %}
-  <h4>{{error}}</h4>
-{% else %}
-  {% if sample.status  %}
-    Образец получен лабораторией. Набор анализов изменению не подлежит
-  {% else %}
-    <button  id="btblo"> Добавить анализ(ы) </button>
-  {% endif %}
-{% endif %}
-    </td>
+      <td>
+      {% if error %}
+        <h4>{{error}}</h4>
+      {% else %}
+        {% if sample.status  %}
+          Образец получен лабораторией. Набор анализов изменению не подлежит
+        {% else %}
+              <button  id="btblo"> Добавить анализ(ы) </button>
+          <button type="button" name="button" onclick="javacript:document.location.href = '/a/s/';">Вернуться к списку образцов</button>
+        {% endif %}
+      {% endif %}
+      </td>
+
   </tr>
 </table>
 </div>

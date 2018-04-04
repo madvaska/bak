@@ -5,6 +5,11 @@
       $('#neworder').hide();
       $('#filter').show();
       $('#analyst').hide();
+      $('#buttonexecute').click(function(event){
+        if(!confirm("Подтвердите, что анализ выполнен и данные внесены. ")){
+          return false;
+        }
+      });
     });
 </script>
 <!--
@@ -104,7 +109,9 @@
         <td>Исполнитель</td>
         <td>Комментарий</td>
         <td> Выполнен/Нет </td>
+        <!--
         <td>Просмотр</td>
+        -->
       </tr>
     {% for order in orders %}
     {% if order.executed %}
@@ -152,18 +159,20 @@
             <form id="fexec{{order.pk}}" action="" method="post">
               {% csrf_token %}
               <input type="hidden" name="orderpk" value={{order.pk}}>
-              <input type="submit" name="orderexecute" value="Отметка о выполнении">
+              <input type="submit" id="buttonexecute" name="orderexecute" value="Отметить выполнение">
             </form>
           {% else %}
 
           {% endif %}
         {% endif %}
       </td>
+      <!--
       <td>
         <a href={% url "order" %}{{order.pk}}>
           <span class="glyphicon glyphicon-search"></span>
         </a>
       </td>
+      -->
     </tr>
     {% endfor %}
     </table>

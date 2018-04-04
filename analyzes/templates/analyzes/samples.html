@@ -1,44 +1,45 @@
 {% extends "index.html" %}
 {% block left_menu %}
-<!--
-<div width = 90 >
-  <form  action="" method="post">
-    <select multiple  name="types" style="width: 90%">
-      <option disabled value=0>Виды анализов</option>
-      {% for type in atypes %}
-        <option value={{type.id}}>{{type}}</option>
-      {% endfor %}
-    </select>
-    <input type="submit" name="" value="Выбрать">
+<div id="divnew">
+  <br />
+  <form action={% url "add_sample"%}>
+    {% csrf_token %}
+    <input type="submit" name="" value="Добавить новый образец">
   </form>
+
 </div>
--->
+
+<div id="fform1">
 <br />
-<form action={% url "add_sample"%}>
+<h4> Назначить одного исполнителя для испытания образца <div id="dsample">
+
+</div> (для всех неназначенных методов)</h4>
+<form id="analyst1" class="analyst1" action="" method="post">
   {% csrf_token %}
-  <input type="submit" name="" value="Добавить новый образец">
+  <input type="hidden" id="spk" name="samplepk" value="">
+  <select class="asel1" name="analystpk">
+    <option value="0"}>Выберите Измерителя</option>
+    {% for customer in customers %}
+      <option value={{customer.pk}}>{{customer}}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" id="submit1" name="submit" value="Назначить">
 </form>
+</div>
 {% endblock %}
 
 {% block content %}
 <script type="text/javascript">
   $(document).ready(function() {
     $('#fform1').hide();
+    $('#buttonstatus').click(function(event){
+      if(!confirm("Подтвердите, образец получен. Методы после этого добавлять будет НЕЛЬЗЯ!")){
+        return false;
+      }
+    });
+
 })
 </script>
-<!--
-<div id="win">
-   <div class="overlay"></div>
-      <div class="visible">
-        <h2>Заголовок окна</h2>
-          <div class="content">
-            <p>Содержание</p>
-            <p>Модальное окно фиксированной ширины</p>
-          </div>
-        <button type="button" onClick="$('#win').hide();">закрыть</button>
-    </div>
-</div>
--->
 <div id="tblo">
 <h4>Таблица образцов</h4>
 <table>
@@ -72,9 +73,10 @@
       {% for ats in sample.atype  %}
         {{ats.type.code}}:{{ats.analyst}},
       {% endfor %}
-      {% if sample.fullStatus >= 0 or sample.fullStatus < 3  %}
+      {% if  sample.fullStatus < 3  %}
         <a href={% url "list_types" %}{{sample.pk}} title="Добавить метод(ы)">
           , <span class="glyphicon glyphicon-plus"></span>
+          {{sample.fullStatus}}
         </a>
       {% endif %}
     </td>
@@ -88,8 +90,9 @@
                 $("#s{{sample.pk}}").click(function(){
                     $("#dsample").html("{{sample}}");
                     $("#spk").attr("value","{{sample.pk}}");
-                    $('#tblo').hide()
+                    $('#divnew').hide()
                     $('#fform1').show();
+                    //$('#tblo').hide()
                 })
             })
               </script>
@@ -119,7 +122,7 @@
             <form class="" action="" method="post">
               {% csrf_token %}
               <input type="hidden" name="samplepk" value={{sample.pk}}>
-              <input type="submit" name="setstatus" value="Отметить получение" title="Внимание! После получения нельзя добавлять методы!">
+              <input type="submit" id="buttonstatus" name="setstatus" value="Отметить получение" title="Внимание! После получения нельзя добавлять методы!">
             </form>
           </td>
           {% else %}
@@ -172,21 +175,4 @@
     })
 })
 </script>
-<div id="fform1">
-<br />
-<h4> Назначить одного исполнителя для испытания образца <div id="dsample">
-
-</div> (для всех методов)</h4>
-<form id="analyst1" class="analyst1" action="" method="post">
-  {% csrf_token %}
-  <input type="text" id="spk" name="samplepk" value="">
-  <select class="asel1" name="analystpk">
-    <option value="0"}>---------------</option>
-    {% for customer in customers %}
-      <option value={{customer.pk}}>{{customer}}</option>
-    {% endfor %}
-  </select>
-  <input type="submit" id="submit1" name="submit" value="Назначить">
-</form>
-</div>
 {% endblock %}
