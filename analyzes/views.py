@@ -347,7 +347,12 @@ def orders(request, page):
 
 
     #print("dd="+customerselected)
-    orders = Paginator(orders,30)
+    try:
+        orders = Paginator(orders,30)
+    except Exception as e:
+        orders=[]
+        orders = Paginator(orders,30)
+
     if page is None:
         page_num = 1
     else:
@@ -614,12 +619,18 @@ def sample_details(request, page):
     #Аналитик
     elif role['analyst']:
         samples = []
+        if role['customer']:
+            bsamples = Sample.objects.filter(customer=role['customer']).prefetch_related('ordersam').order_by("-dateTime")
+            for sample in bsamples:
+                if samples.count(sample) == 0:
+                    samples.append(sample)
         orders = Order.objects.all().prefetch_related('analyst').filter(analyst__analyst=role['analyst']).order_by("dateTime")
         for order in orders:
             if samples.count(order.codeOfSample) == 0:
                 samples.append(order.codeOfSample)
     #Заказчик
     elif role['customer']:
+        #print(role['customer'])
         samples = Sample.objects.filter(customer=role['customer']).prefetch_related('ordersam').order_by("-dateTime")
     else:
         samples = []
