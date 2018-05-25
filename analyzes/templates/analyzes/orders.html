@@ -70,6 +70,19 @@
 </form>
 </div>
 
+
+<div id="setAllAnalysts" height="100" >
+  <br />
+  <h4>Выставить измерителей по умолчанию</h4>
+  <form class="" action="" method="post" >
+    {% csrf_token %}
+    <!--<input  id='ordername' type="text" name="ordername" value="">-->
+    <br />
+    <input type="submit" id="setAllAnalystsSubmit" name="setAllAnalysts" value="Применить">
+  </form>
+  <br />
+
+</div>
 <div id="analyst" height="100" >
   <br />
   <h4>Выберите измерителя для заказа <div id="ordername">

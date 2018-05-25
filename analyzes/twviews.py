@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze, OrdersCode, SamplesCode,Sample
 from persons.models import Customer,Person, Analyst
-from django.views.generic.edit import CreateView, ListView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import ListView
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.contrib.auth.models import User
@@ -213,6 +214,19 @@ class AddSample(CreateView):
             raise Exception('You are not customer.')
         return super(AddSample,self).form_valid(form)
 
-class ListAnalyzeTypes(ListView)
+class ListAnalyzeTypes(ListView):
     model = AnalyzeType
-    fields = ['code','name','analyst']
+    fields = ['code','name','defaultanalyst','group']
+
+class UpdateAnalyzeType(UpdateView):
+    model = AnalyzeType
+    fields = ['code','name','defaultanalyst','group']
+    template_name = 'analyzes/updateanalyzetype.html'
+    success_url="/a/atlist"
+
+    #def post(self,request,*args,**kwargs):
+    #    print("POST")
+    #    print(request.POST)
+    #    print(self)
+    #    print(self.form_valid())
+    #    return(super(UpdateAnalyzeType,self).post(request,*args,**kwargs))

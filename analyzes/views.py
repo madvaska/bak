@@ -19,7 +19,6 @@ from django.utils import timezone
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
 
-
 #===============================================================================
 #
 #
@@ -177,7 +176,9 @@ def orders(request, page):
         formlist = {'newOrder':{'newOrder':'newOrder'},
         'filter':{'filterOn':'filterOn','filterOff':'filterOff'},
         'setAnalyst':{'setAnalyst':'setAnalyst'},
-        'orderexecute':{'orderexecute':'orderexecute'},}
+        'orderexecute':{'orderexecute':'orderexecute'},
+        'setAllAnalysts':{'setAllAnalysts':'setAllAnalysts'},
+        }
         #1. Определим данные какой формы пришли
         formName = getFormName(request.POST, formlist)
         #1.1 Если не смогли определить форму, то сохраним ошибку
@@ -202,6 +203,8 @@ def orders(request, page):
                 pass
             else:
                 error = "Только измеритель или руководитель проставлять информацию об исполнени"
+        elif formName[0] == 'setAllAnalysts':
+            pass
         else:
             error="Форма не опознана. Обратитесь к разработчику."
         #2.2. Если да, то продолжим
@@ -246,6 +249,8 @@ def orders(request, page):
                     order = Order.objects.get(pk=orderpk)
             except Exception as e:
                 error="Что то пошло не так"
+        elif formName[0] == 'setAllAnalysts':
+            pass
         #3.2. Проверим имеет ли пользователь право выполнять требуемые  операции
         # с указанными объектами
         # TODO:
@@ -272,6 +277,8 @@ def orders(request, page):
                         error = "Нельзя закрывать не свои заказы."
                 except Exception as e:
                     error = "Не назначенного измерителя "+str(e)
+        elif formName[0] == 'setAllAnalysts':
+            pass
         #3.3. Если некоректно то сохраним ошибку и покажем её на странице
         # TODO:
         #3.4. Если корректно то продолжим
@@ -308,7 +315,37 @@ def orders(request, page):
                 order.executed = True
                 order.executedDateTime = timezone.now()
                 order.save()
+                typeselected = ""
+                customerselected = ''
+                projectselected = ''
+                if role['auth'] == False:
+                    error="Необходимо авторизоваться"
+                elif (role['superAnalyst'] is not None) or (role['admin'] is not None):
+                    orders = Order.objects.all().order_by('-codeOfSample__dateTime')
+                    pass
+                else: # либо аналитик либо заказчик, либо и то и другое
+                    if (role['customer'] is not None) and (role['analyst'] is not None):
+                        # TODO: order
+                        orders1 = Order.objects.filter(customer=role['customer']).order_by('-codeOfSample__dateTime')
+                        orders2 = Order.objects.exclude(analyst__isnull=False).filter(analyst__analyst=role['analyst']).order_by('-codeOfSample__dateTime')
 
+                    elif (role['customer'] is not None):
+                        orders = Order.objects.filter(customer=role['customer']).order_by('-codeOfSample__dateTime')
+                    elif (role['analyst'] is not None):
+                        print("Вы измеритель!")
+                        print(role['analyst'])
+                        #orders = Order.objects.exclude(analyst__isnull=False)
+                        #print(orders)
+                        orders = Order.objects.filter(analyst__analyst=role['analyst']).order_by('executed','-codeOfSample__dateTime')
+                        print(orders)
+                    else:
+                        error='Не предвиденный тип пользователя.'
+                    pass
+                pass
+        elif formName[0] == 'setAllAnalysts':
+            print(orders)
+            print("Щаз выставлю")
+            pass
 
         #4.1 Если данные не удалось обработать, то сохраняем ошибку
         # и покажем её на странице
@@ -318,6 +355,7 @@ def orders(request, page):
         #4.2 Если данные успешно обработаны, то продолжим отрисовку страницы
 
     else: #Нет данных посланных пост. необходимо начальное заполнение
+        print("Нет пост данных")
         typeselected = ""
         customerselected = ''
         projectselected = ''
@@ -335,7 +373,12 @@ def orders(request, page):
             elif (role['customer'] is not None):
                 orders = Order.objects.filter(customer=role['customer']).order_by('-codeOfSample__dateTime')
             elif (role['analyst'] is not None):
-                orders = Order.objects.exclude(analyst__isnull=False).filter(analyst__analyst=role['analyst']).order_by('-codeOfSample__dateTime')
+                print("Вы измеритель!")
+                print(role['analyst'])
+                #orders = Order.objects.exclude(analyst__isnull=False)
+                #print(orders)
+                orders = Order.objects.filter(analyst__analyst=role['analyst']).order_by('executed','-codeOfSample__dateTime')
+                print(orders)
             else:
                 error='Не предвиденный тип пользователя.'
             pass

@@ -1,7 +1,9 @@
 {% extends "index.html" %}
+Вид анализа:
 {% block content %}
 <form class="" method="post">
   {% csrf_token %}
   {{form.as_p}}
-</form>
+  <input type="submit" name="updateat" value="Записать изменения">
+</form>  
 {% endblock %}

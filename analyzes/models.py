@@ -26,12 +26,16 @@ class GroupAnalyzes(models.Model):
     def __unicode__(self):
         return u"GroupAnalyzes"
 
+#class AnalyzeType2(models.Model):
+##    code = models.CharField(unique=True,max_length=10, verbose_name='Код')
+#    name = models.CharField(unique=True,max_length=400, verbose_name='Наименование')
+
 class AnalyzeType(models.Model):
     # TODO: Define fields here
     code = models.CharField(unique=True,max_length=10, verbose_name='Код')
     name = models.CharField(unique=True,max_length=400, verbose_name='Наименование')
-    analyst = models.ForeignKey(Analyst,blank=True)
-    group = models.ForeignKey(GroupAnalyzes, blank=True)
+    group = models.ForeignKey(GroupAnalyzes, blank=True, null=True)
+    defaultanalyst = models.ForeignKey(Analyst, null=True, blank=True, default=None)
     class Meta:
         verbose_name = 'Вид анализов'
         verbose_name_plural = 'Виды анализов'
