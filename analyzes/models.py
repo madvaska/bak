@@ -30,6 +30,7 @@ class AnalyzeType(models.Model):
     # TODO: Define fields here
     code = models.CharField(unique=True,max_length=10, verbose_name='Код')
     name = models.CharField(unique=True,max_length=400, verbose_name='Наименование')
+    analyst = models.ForeignKey(Analyst,blank=True)
     group = models.ForeignKey(GroupAnalyzes, blank=True)
     class Meta:
         verbose_name = 'Вид анализов'

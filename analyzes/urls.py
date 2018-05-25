@@ -19,7 +19,7 @@ from persons.views import AddPersons
 from django.views.generic import CreateView
 #from django.contrib import admin
 from analyzes.twviews import AddAnalyze, AddProject, AddAnalyzeType, AddOrder
-from analyzes.twviews import AddSample
+from analyzes.twviews import AddSample, ListAnalyzeTypes
 
 
 urlpatterns = [
@@ -41,5 +41,6 @@ urlpatterns = [
     url(r'^s/at/(?P<samplepk>\d+)?$', views.list_types, name='list_types'),
     url(r'^s/add', AddSample.as_view(), name='add_sample'),
     url(r'^report/', views.report, name='reports'),
+    url(r'^atlist', ListAnalyzeTypes.as_view(), name='list_at'),
     #url(r'^soa/(?P<samplepk>\d+)?$', views.list_types, name='list_types'),
 ]

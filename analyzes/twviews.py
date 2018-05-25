@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import Order, Project, AnalyzeType, Analyze, OrdersCode, SamplesCode,Sample
 from persons.models import Customer,Person, Analyst
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, ListView, UpdateView
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.contrib.auth.models import User
@@ -212,3 +212,7 @@ class AddSample(CreateView):
         except Exception as e:
             raise Exception('You are not customer.')
         return super(AddSample,self).form_valid(form)
+
+class ListAnalyzeTypes(ListView)
+    model = AnalyzeType
+    fields = ['code','name','analyst']
