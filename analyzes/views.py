@@ -18,6 +18,7 @@ from django.utils import timezone
 #test
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 
 #===============================================================================
 #
@@ -345,6 +346,21 @@ def orders(request, page):
         elif formName[0] == 'setAllAnalysts':
             print(orders)
             print("Щаз выставлю")
+            allAT = AnalyzeType.objects.filter(defaultanalyst__isnull=False)
+            print(allAT)
+            allOrders = Order.objects.filter(analyst__isnull=True)
+            print(allOrders)
+            for oneOrder in allOrders:
+                try:
+                    elemAT = allAT.get(pk=oneOrder.type.pk)
+                except Exception as e:
+                    print("UPS")
+                else:
+                    print("find it")
+                    print(elemAT)
+                    SetAnalyst.objects.create(order=oneOrder,analyst=elemAT.defaultanalyst,assignBy=role['analyst'].person)
+                    pass
+                pass
             pass
 
         #4.1 Если данные не удалось обработать, то сохраняем ошибку
@@ -420,6 +436,12 @@ def orders(request, page):
 
 
     print(orders.paginator.num_pages)
+    #print("render=")
+    #print(render_to_string('analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,
+    #'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected,
+    #'analysts':analysts}))
+    #print("end od render")
+
     return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,
     'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected,
     'analysts':analysts})

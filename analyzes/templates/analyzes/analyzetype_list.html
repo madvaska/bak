@@ -2,6 +2,7 @@
 {% block content %}
 
 Таблица
+{{slu1}}
     <table class="table">
       <tr>
         <td>Код</td>
@@ -14,7 +15,7 @@
       <td>{{elem.code}}</td>
       <td>{{elem.name}}</td>
       <td>{{elem.defaultanalyst}}</td>
-      <td><a href="at_edit/{{elem.id}}"><span class="glyphicon glyphicon-pencil"></a></span></td>
+      <td><a href="/a/at_edit/{{elem.id}}"><span class="glyphicon glyphicon-pencil"></a></span></td>
     </tr>
     {% endfor %}
     </table>

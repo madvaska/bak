@@ -3,6 +3,10 @@ from persons.models import Customer,Analyst, Person, Administrator
 import datetime
 
 # Create your models here.
+class SampleList(models.Manager):
+    def today1(self,tn):
+        return self.filter(dateTime__gte=datetime.date.today())
+
 
 class Project(models.Model):
     # TODO: Define fields here
@@ -71,6 +75,7 @@ class Sample(models.Model):
     code = models.CharField(max_length=20,unique=True,verbose_name='Код образца')
     status = models.BooleanField(default=False, verbose_name = 'Образец получен лабораторией')
     comment = models.TextField( blank = True, verbose_name='Описание образца' )
+    objects = SampleList
 
     class Meta:
         verbose_name = 'Опытный образец'
