@@ -1,4 +1,24 @@
 {% extends "index.html" %}
+
+{% block menu %}
+  <div class="menufirstpoint">
+    <a href="/a/s"><div class='selected'>Для Заказчика</div></a>
+  </div>
+  <div class="menupoint">
+    <a href="/a/o/">Для Измерителя</a>
+  </div>
+  <div class="menupoint">
+    <a href="/a/report/"> Отчеты </a>
+  </div>
+  <div class="menupoint">
+    <a href="/admin/#"> Администрирование </a>
+  </div>
+  <div class="menupoint">
+    <a href="/a/atlist/#"> Виды анализов </a>
+  </div>
+{% endblock menu %}
+
+
 {% block left_menu %}
 <div id="divnew">
   <br />
@@ -45,10 +65,13 @@
 <table>
   <tr>
     <td>Код образца</td>
+    <td>Дата</td>
     <td>Виды анализов</td>
+    <!--
     {% if role.superAnalyst %}
       <td>Исполнитель</td>
     {% endif %}
+    -->
     {% if role.customer %}
       <td>Добавить метод</td>
     {% endif %}
@@ -60,15 +83,11 @@
   {% for sample in samples %}
   <tr>
     <td  title={{sample.comment}}>
-      {% if role.customer and sample.fullStatus < 3 %}
-        <!--<a href={% url "list_types" %}{{sample.pk}} title={{sample.comment}}>{{sample}}</a></td>-->
-         {{sample}}
-      {% else %}
-        <div title={{sample.comment}}>
-          {{sample}}
-        </div>
-      {% endif %}
-      </td>
+         {{sample.code}}
+    </td>
+    <td  title={{sample.comment}}>
+         {{sample.dateTime}}
+    </td>
     <td>
       {% for ats in sample.atype  %}
         {{ats.type.code}}:{{ats.analyst}},
@@ -80,6 +99,7 @@
         </a>
       {% endif %}
     </td>
+    <!--
       {% if role.superAnalyst %}
         {% if sample.fullStatus < 1  %}
           <td></td>
@@ -105,6 +125,7 @@
           {% endif %}
         {% endif %}
       {% endif %}
+      -->
       {% if role.customer %}
         {% if sample.fullStatus < 3  %}
           <td><a href={% url "list_types" %}{{sample.pk}} >

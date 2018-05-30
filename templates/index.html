@@ -20,7 +20,7 @@
   <div class="main-container">
   <div class="header">
     <div class="logo">
-      Прототип системы регистрации анализов. АО СКТБ Катализатор
+      Прототип2 системы регистрации анализов. АО СКТБ Катализатор
     </div>
     <div class="login">
     {% block login %}
@@ -32,21 +32,23 @@
     {% endblock  %}
     </div>
     <div class="menu">
-      <div class="menufirstpoint">
-        <a href="/a/s"> Образцы </a>
-      </div>
-      <div class="menupoint">
-        <a href="/a/o/"> Заказы </a>
-      </div>
-      <div class="menupoint">
-        <a href="/a/report/"> Отчеты </a>
-      </div>
-      <div class="menupoint">
-        <a href="/admin/#"> Администрирование </a>
-      </div>
-      <div class="menupoint">
-        <a href="/a/atlist/#"> Виды анализов </a>
-      </div>
+      {% block menu %}
+        <div class="menufirstpoint">
+          <a href="/a/s">Для Заказчика</a>
+        </div>
+        <div class="menupoint">
+          <a href="/a/o/">Для Измерителя</a>
+        </div>
+        <div class="menupoint">
+          <a href="/a/report/"> Отчеты </a>
+        </div>
+        <div class="menupoint">
+          <a href="/admin/#"> Администрирование </a>
+        </div>
+        <div class="menupoint">
+          <a href="/a/atlist/#"> Виды анализов </a>
+        </div>
+      {% endblock menu %}
     </div>
     <div class="clear"></div>
   </div>

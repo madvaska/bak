@@ -98,3 +98,7 @@ background-color: red
 	border-bottom: 1px solid #ccc;
 	background: WhiteSmoke;
 }
+
+.selected {
+  background-color: gray;
+}

@@ -442,6 +442,9 @@ def orders(request, page):
     #'analysts':analysts}))
     #print("end od render")
 
+    #orders = orders.order_by('-dateTime')
+
+
     return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,
     'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected,
     'analysts':analysts})
