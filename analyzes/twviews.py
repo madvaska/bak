@@ -237,3 +237,17 @@ class UpdateAnalyzeType(UpdateView):
     #    print(self)
     #    print(self.form_valid())
     #    return(super(UpdateAnalyzeType,self).post(request,*args,**kwargs))
+
+
+class SamplesList(ListView):
+    model=Sample
+    fields = ['dateTime','customer','code','comment']
+    paginate_by = 3
+
+    success_url="/stest"
+
+    def get_context_data(self, **kwards):
+        context = super(SamplesList, self).get_context_data(**kwards)
+        context['viewListHead'] = Sample.viewInListHead()
+        print(context['viewListHead'])
+        return context

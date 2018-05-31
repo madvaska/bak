@@ -20,6 +20,7 @@ from django.views.generic import CreateView
 #from django.contrib import admin
 from analyzes.twviews import AddAnalyze, AddProject, AddAnalyzeType, AddOrder
 from analyzes.twviews import AddSample, ListAnalyzeTypes, UpdateAnalyzeType
+from analyzes.twviews import SamplesList
 
 
 urlpatterns = [
@@ -44,5 +45,6 @@ urlpatterns = [
     url(r'^atlist', ListAnalyzeTypes.as_view(), name='list_at'),
     url(r'^atlist1/(?P<slu1>\d+)?$', ListAnalyzeTypes.as_view(), name='list_at'),
     url(r'^at_edit/(?P<pk>\d+)?$', UpdateAnalyzeType.as_view(), name='update_at'),
+    url(r'^stest', SamplesList.as_view(), name='samples_list'),
     #url(r'^soa/(?P<samplepk>\d+)?$', views.list_types, name='list_types'),
 ]

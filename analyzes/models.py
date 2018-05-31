@@ -81,8 +81,19 @@ class Sample(models.Model):
         verbose_name = 'Опытный образец'
         verbose_name_plural = 'Опытные образцы'
 
+    @staticmethod
+    def viewInListHead():
+        alist = []
+        alist.append("Код")
+        return  alist
+
+    def viewInList(self):
+        alist = []
+        alist.append(self.code)
+        return  alist
+
     def __unicode__(self):
-        return u"Sample"
+        return u"Образцы"
 
     def __str__(self):
         return(self.code + " от " +  str(self.dateTime) +" "+ str(self.customer))

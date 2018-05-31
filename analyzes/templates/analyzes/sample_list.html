@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+{% block left_menu %}
+{% endblock %}
+
+{% block content %}
+
+<h4>Добавление НОВОГО образца</h4>
+<table>
+  <tr>
+    {% for elem in viewListHead %}
+        <td>{{elem}}</td>
+    {% endfor %}
+  </tr>
+  {% for sample in sample_list %}
+  <tr>
+    {% for elem in sample.viewInList %}
+        <td>{{elem}}</td>
+    {% endfor %}
+  </tr>
+
+  {% endfor %}
+</table>
+
+{% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+        <li>
+            <span><a href="?page={{ page_obj.previous_page_number }}">Пред.</a></span>
+        </li>
+    {% endif %}
+    <li class="">
+      <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.</span>
+    </li>
+    {% if page_obj.has_next %}
+        <li>
+            <span><a href="?page={{ page_obj.next_page_number }}">След.</a></span>
+        </li>
+    {% endif %}
+  </ul>
+{% else %}
+  <h3>Your File Exam</h3>
+  <p>File not yet available</p>
+{% endif %}
+
+{% endblock %}
