@@ -2,6 +2,8 @@ from django.db import models
 from persons.models import Customer,Analyst, Person, Administrator
 import datetime
 
+from .managers import SampleList
+
 # Create your models here.
 class SampleList(models.Manager):
     def today1(self,tn):
@@ -84,11 +86,13 @@ class Sample(models.Model):
     @staticmethod
     def viewInListHead():
         alist = []
+        alist.append("ID")
         alist.append("Код")
         return  alist
 
     def viewInList(self):
         alist = []
+        alist.append(self.pk)
         alist.append(self.code)
         return  alist
 

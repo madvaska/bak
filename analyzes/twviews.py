@@ -243,11 +243,13 @@ class SamplesList(ListView):
     model=Sample
     fields = ['dateTime','customer','code','comment']
     paginate_by = 3
-
     success_url="/stest"
 
-    def get_context_data(self, **kwards):
-        context = super(SamplesList, self).get_context_data(**kwards)
-        context['viewListHead'] = Sample.viewInListHead()
-        print(context['viewListHead'])
-        return context
+
+    def get_queryset(self):
+        print(self.user)
+        return Sample.objects.all().order_by("pk")
+
+    def get(self, request, *args, **kwargs):
+        self.user = request.user
+        return super(SamplesList,self).get(request, *args, **kwargs)
