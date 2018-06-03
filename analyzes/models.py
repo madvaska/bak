@@ -2,7 +2,12 @@ from django.db import models
 from persons.models import Customer,Analyst, Person, Administrator
 import datetime
 
-from .managers import SampleList
+#from .managers import SampleList
+
+class SampleList(models.Manager):
+    def custom_filter():
+        return super(SampleList,self).get_query_set().order_by("-pk")
+
 
 # Create your models here.
 class SampleList(models.Manager):
@@ -77,7 +82,7 @@ class Sample(models.Model):
     code = models.CharField(max_length=20,unique=True,verbose_name='Код образца')
     status = models.BooleanField(default=False, verbose_name = 'Образец получен лабораторией')
     comment = models.TextField( blank = True, verbose_name='Описание образца' )
-    objects = SampleList
+    objects = SampleList()
 
     class Meta:
         verbose_name = 'Опытный образец'
