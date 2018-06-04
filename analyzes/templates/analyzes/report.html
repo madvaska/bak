@@ -9,27 +9,18 @@
 <form class="" action="" method="post">
   {% csrf_token %}
   <select class="" name="reporttype">
-    <option value="0">Выберите вид отчета</option>
-    <option value="1">по выполненным заказам в разрезе методов</option>
-    <option value="2">по выполненным заказам в разрезе заказчиков</option>
-    <option value="3">Статистика выполнения</option>
+    <option value="0">Выберите тип анализа</option>
+    {% for report in reporttypes %}
+        <option value="{{report.pk}}" {% if report.selected %}selected{% endif %}>{{report.name}}</option>
+    {% endfor %}
   </select>
   <br />
   Период отчета:
   <select class="" name="reportdates">
-    <option value="0">Месяц</option>
-    <option value="1">Январь</option>
-    <option value="2">Февраль</option>
-    <option value="3">Март</option>
-    <option value="4">Апрель</option>
-    <option value="5">Май</option>
-    <option value="6">Июнь</option>
-    <option value="7">Июль</option>
-    <option value="8">Август</option>
-    <option value="9">Сентябрь</option>
-    <option value="10">Октябрь</option>
-    <option value="11">Ноябрь</option>
-    <option value="12">Декабрь</option>
+    <option value="0">Выберите месяц</option>
+    {% for month in months %}
+        <option value="{{month.pk}}" {% if month.selected %}selected{% endif %}>{{month.name}}</option>
+    {% endfor %}
   </select>
   <br />
   <input type="submit" name="formsubmit" value="Сформировать">
@@ -51,7 +42,7 @@
 {% for row in table.rows %}
 <tr>
   {% for cell  in row %}
-    <td>{{cell}}</td>
+    <td>{% if cell.type %}<a href="{{cell.type}}">{{cell.value}}</a> {%else%}{{cell.value}} {% endif %}</td>
   {% endfor %}
 </tr>
 {% endfor %}

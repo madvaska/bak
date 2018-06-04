@@ -3,6 +3,18 @@
 
 
 {% block left_menu %}
+<div >
+  <form class="selectdate" action="" method="post">
+    {% csrf_token %}
+    <div>
+      <label class="required" for="id_dateTime">Дата:</label>
+      <input type="text" name="dateTime" value="29.05.2018" class="vDateField" id="id_dateTime" required size="10" /><input type="hidden" name="initial-dateTime" value="2018-05-29" id="initial-id_dateTime" />
+      <input type="submit" name="" value="Показать" value = "setdate" />
+    </div>
+  </form>
+</div>
+
+
 <div id="divnew">
   <br />
   <form action={% url "add_sample"%}>

@@ -14,6 +14,18 @@
 </script>
 <!--
 -->
+
+<div >
+  <form class="setdate" action="" method="post">
+    {% csrf_token %}
+    <div>
+      <label class="required" for="id_dateTime">Дата:</label>
+      <input type="text" name="dateTime"  id="setdate" value="{{selectDate}}" required size="10" /><input type="hidden" name="initial-dateTime" value="2018-05-29" id="initial-id_dateTime" />
+      <input type="submit" name="" value="Показать" value = "setdate" />
+    </div>
+  </form>
+</div>
+
 <div  id="neworder">
 <p>
   <form class="filter" action="/a/o/add/" method="get">
@@ -22,6 +34,7 @@
 </p>
 </div>
 
+<!--
 <div id='filter'>
 <form class="filter" action="" method="post" >
   {% csrf_token %}
@@ -69,6 +82,7 @@
 </fieldset>
 </form>
 </div>
+-->
 
 
 <div id="setAllAnalysts" height="100" >

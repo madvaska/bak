@@ -13,7 +13,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
-import datetime
+from datetime import datetime
 from django.utils import timezone
 #test
 from reportlab.pdfgen import canvas
@@ -146,6 +146,7 @@ def getFormName(POSTDICT, formlist):
 #===============================================================================
 def orders(request, page):
     error = None
+    selectDate = datetime.now()
     role = getUserRole(request)
     analysts = Analyst.objects.all()
     if role['auth'] == False:
@@ -179,13 +180,17 @@ def orders(request, page):
         'setAnalyst':{'setAnalyst':'setAnalyst'},
         'orderexecute':{'orderexecute':'orderexecute'},
         'setAllAnalysts':{'setAllAnalysts':'setAllAnalysts'},
+        'dateTime':{'dateTime':'dateTime'},
         }
         #1. Определим данные какой формы пришли
         formName = getFormName(request.POST, formlist)
+        print(formName)
+        print(request.POST)
         #1.1 Если не смогли определить форму, то сохраним ошибку
         # и покажем её на странице
         if formName is None:
             error="Не определена форма. Свяжитесь с разработчиком."
+            print(error)
         #1.2 Если смогли то продолжим обработку
         #2. Проверим имеет ли пользователь право работать с этой формой
         #2.1. Если нет, то формируем ошибку и покажем это на странице
@@ -199,6 +204,12 @@ def orders(request, page):
         elif formName[0] == 'setAnalyst':
             if role['superAnalyst'] is None:
                 error="Только суперАналитик может назначать измерителей"
+        elif formName[0] == 'dateTime':
+            print(request.POST['dateTime'])
+            selectDate = datetime.strptime(request.POST['dateTime'],"%d.%m.%Y")
+            print(selectDate)
+            print("Lenta=")
+            print(request.POST)
         elif formName[0] == 'orderexecute':
             if role['superAnalyst'] or role['analyst']:
                 pass
@@ -404,7 +415,8 @@ def orders(request, page):
     projects = Project.objects.all().order_by('name')
     customers = Customer.objects.all().order_by('person__user__last_name')
 
-
+    #Добавим выборку по дате и сортировку
+    orders = orders.filter(dateTime__date = selectDate.date()).order_by("executed","-pk")
     #print("dd="+customerselected)
     try:
         orders = Paginator(orders,30)
@@ -444,10 +456,10 @@ def orders(request, page):
 
     #orders = orders.order_by('-dateTime')
 
-
     return render(request, 'analyzes/orders.html', {'orders':orders, 'types':types,'customers':customers,
+
     'projects':projects,'typeselected':typeselected,'customerselected':customerselected,'projectselected':projectselected,
-    'analysts':analysts})
+    'analysts':analysts,'selectDate':selectDate.date().strftime("%d.%m.%Y")})
 
 #===============================================================================
 #
@@ -807,12 +819,40 @@ def list_types(request, samplepk):
 
 
 def report(request):
+
+    months = [
+    {'pk':'1',    'name':"Январь" , 'selected':False },
+    {'pk':'2',    'name':"Февраль", 'selected':False },
+    {'pk':'3',    'name':"Март", 'selected':False },
+    {'pk':'4',    'name':"Апрель", 'selected':False },
+    {'pk':'5',    'name':"Май" , 'selected':False},
+    {'pk':'6',    'name':"Июнь" , 'selected':False},
+    {'pk':'7',    'name':"Июль" , 'selected':False},
+    {'pk':'8',    'name':"Август" , 'selected':False},
+    {'pk':'9',    'name':"Сентябрь" , 'selected':False},
+    {'pk':'10',    'name':"Октябрь" , 'selected':False},
+    {'pk':'11',    'name':"Ноябрь" , 'selected':False},
+    {'pk':'12',    'name':"Декабрь" , 'selected':False}
+    ]
+    reporttypes= [
+    {'pk':'1',    'name':"по выполненным заказам в разрезе методов" , 'selected':False },
+    {'pk':'2',    'name':"по выполненным заказам в разрезе заказчиков", 'selected':False },
+    {'pk':'3',    'name':"Статистика выполнения", 'selected':False }
+    ]
+    month = request.POST.get('reportdates', default=None)
+    reporttype = request.POST.get('reporttype', default=None)
+    print(month)
+    print(reporttype)
     year = '2018'
-    month='04'
+    if((month is None) or (reporttype is None)):
+        return render(request, 'analyzes/report.html', {'reportName':reporttype,'table':None,'months':months,'reporttypes':reporttypes})
+    else:
+        months[int(month)-1]['selected'] = True
+        reporttypes[int(reporttype)-1]['selected'] = True
+
     orders = Order.objects.filter(dateTime__year=year,dateTime__month=month).order_by('analyst__analyst','executed')
     #orders = Order.objects.filter(dateTime__year=year,dateTime__month=month)
     #orders = Order.objects.filter(dateTime__year=year,dateTime__month=month,executed=True)
-
     print(orders)
     massiv = {}
     analysts = {}
@@ -883,7 +923,10 @@ def report(request):
     #print (lastanalyst)
     #print(counter1)
     #print(analysts)
-    reportName = "Имя отчета"
+    if(reporttype is None):
+        reportName = "Имя отчета"
+    else:
+        reportName = reporttypes[int(reporttype)-1]['name']
     table={}
     table['headers']=[]
     table['rows']=[]
@@ -904,13 +947,14 @@ def report(request):
                     table['headers'].append({'name':str(analyst)})
                 for type1 in types:
                     tablerow = []
-                    tablerow.append(str(type1))
+                    tablerow.append({'value':str(type1), 'type':"", 'analyst':""})
                     for analyst in analysts:
                         try:
-                            tablerow.append(massivWithoutCustomer[(analyst,type1,True)])
+                            tablerow.append({'value':massivWithoutCustomer[(analyst,type1,True)], 'type':type1.pk, 'analyst':analyst.pk})
                         except Exception as e:
-                            tablerow.append(0)
+                            tablerow.append({'value':0, 'type':type1.pk, 'analyst':analyst.pk})
                     print(tablerow)
                     table['rows'].append(tablerow)
+    print("table=")
     print(table)
-    return render(request, 'analyzes/report.html', {'reportName':reportName,'table':table})
+    return render(request, 'analyzes/report.html', {'reportName':reportName,'table':table,'months':months,'reporttypes':reporttypes})
