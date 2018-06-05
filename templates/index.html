@@ -8,7 +8,10 @@
   <title>Прототип СВХА</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/base/jquery-ui.css">
   <link rel="stylesheet" type="text/css" href= {% static "css/style.css" %}  />
+
+
 
   <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css" />
   <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
@@ -22,6 +25,7 @@
 <body>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="stylesheet" href="https://github.com/jquery/jquery-ui/blob/master/ui/i18n/datepicker-ru.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <div class="main-container">
   <div class="header">
@@ -29,7 +33,12 @@
       Прототип2 системы регистрации анализов. АО СКТБ Катализатор
     </div>
     <div class="login">
-    {% block login %}
+      {% block search %}
+        {% if user.is_authenticated %}
+          <a href="/a/search"><span class="glyphicon glyphicon-search"></span></a>
+          {% endif %}
+      {% endblock  %}
+      {% block login %}
     {% if user.is_authenticated %}
       <a href="profile.html">{{user.username}}</a> | <a href="/logout/">Выход</a>
     {% else %}
@@ -85,7 +94,13 @@
 </div>
 <script type="text/javascript">
   $(function() {
-      $("#setdate").datepicker();
+
+      $("#setdate").datepicker({monthNames: ['Январь', 'Февраль', 'Март', 'Апрель',
+'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь',
+'Октябрь', 'Ноябрь', 'Декабрь'],
+ dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+ firstDay: 1,
+ dateFormat:'dd.mm.yy'});
   })
 </script>
 </body>

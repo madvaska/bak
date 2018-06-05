@@ -8,6 +8,7 @@ from django.core.paginator import EmptyPage
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
+from django.views.generic.edit import FormMixin
 import datetime
 
 class AddOrder(CreateView):
@@ -253,3 +254,12 @@ class SamplesList(ListView):
     def get(self, request, *args, **kwargs):
         self.user = request.user
         return super(SamplesList,self).get(request, *args, **kwargs)
+
+
+
+class SearchViewMy(ListView, FormMixin):
+    model = Order
+
+    def get(self, request, *args, **kwargs):
+        self.user = request.user
+        return super(SearchViewMy,self).get(request, *args, **kwargs)
